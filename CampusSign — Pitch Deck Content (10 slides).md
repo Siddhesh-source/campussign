@@ -100,10 +100,10 @@ The close builds trust (law, cryptography, comparison), then lands the impact an
 ### Slide 7 · The trust layer
 
 - **Headline:** Change one character and the proof breaks.
-- **On slide:** a flow: Signed PDF → SHA-256 fingerprint → written to blockchain → QR on the PDF. Then a fork: original PDF → **Verified** (emerald tick); edited PDF → **Tampered** (red cross). A row of five trust badges: *IT Act s.5: e-sign = wet ink* · *Aadhaar eSign* · *BSA 2023 s.61: e-records = paper* · *DPDP-ready, no personal data on chain* · *Same model as India's National Blockchain Framework*.
+- **On slide:** a flow: Signed PDF → SHA-256 fingerprint → written to blockchain → QR on the PDF. Then a fork: original PDF → **Verified** (emerald tick); edited PDF → **Tampered** (red cross). Under the flow, three small proof chips: *Every approver signs with their own wallet* · *One Merkle root proves every signature* · *Audit trail checkpointed on chain*. A row of five trust badges: *IT Act s.5: e-sign = wet ink* · *Aadhaar eSign* · *BSA 2023 s.61: e-records = paper* · *DPDP-ready, no personal data on chain* · *Same model as India's National Blockchain Framework*.
 - **Visual:** the fork is the hero image; badges sit as a strip at the foot.
 - **Trust cue:** the whole slide is the trust cue; keep it calm and uncluttered.
-- **Say:** "A recruiter in Bengaluru can verify a NOC from Pune in two seconds, without a phone call."
+- **Say:** "A recruiter in Bengaluru can verify a NOC from Pune in two seconds, without a phone call. And the chain does not just say the document exists: the smart contract itself checks each approver's signature, so nobody has to take the college server's word for who signed."
 
 ### Slide 8 · Why we win
 
@@ -140,6 +140,8 @@ Judges trust what looks real, sourced and consistent, so authentic photos and a 
 - Legal anchors named precisely: IT Act 2000 s.5 and s.3A, Aadhaar eSign, Bharatiya Sakshya Adhiniyam 2023 s.61, DPDP Rules 2025.
 - Government precedent: the National Blockchain Framework and its certificate chain.
 - A privacy line wherever blockchain appears: "hash only, no personal data on chain".
+- On the verify screen shown in the deck: each signer with a short wallet address and "checked on chain", plus the block number.
+- One line on the network: "Each college writes only its own records; a governance account admits new colleges" (a permissioned, Proof of Authority consortium).
 - A real, scannable QR on slides 7 and 10 that opens a sealed sample document on the verify page.
 - "AI assists, humans decide" wherever AI appears.
 

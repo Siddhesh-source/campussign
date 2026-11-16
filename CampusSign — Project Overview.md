@@ -56,6 +56,10 @@ CampusSign is a role-aware approval platform: the student submits once, the syst
 3. **Sequential and parallel approvals.** Event permission flows step by step; no-dues goes to library, labs, hostel and accounts at the same time and completes when all approve.
 4. **One-tap signing.** Approvers sign from phone or laptop with OTP. For documents that carry legal weight (bonafide, NOC, LOR), the platform can call Aadhaar eSign, which the IT Act treats as equal to a wet-ink signature.
 5. **Blockchain seal.** The final signed PDF is hashed (SHA-256) and the hash, request ID, signer roles and timestamps are written to a blockchain. A QR code on the PDF opens a public verify page.
+   - **A wallet per approver.** Every approver has their own key pair and address; each approval is signed with it, unlocked by the approver's PIN.
+   - **Merkle root of approvals.** The approvals of a document are hashed into a Merkle tree and only the 32-byte root goes on chain, so cost stays the same for 2 signers or 20.
+   - **On-chain signer check.** The smart contract verifies any single approval itself (signature recovery plus a Merkle proof), so a verifier does not have to trust the college server about who signed.
+   - **Tamper-evident audit trail.** Every audit entry is linked to the one before it by its hash, and the latest entry is checkpointed on chain; an edited or deleted record is detected.
 6. **Parcel-style tracking.** Students see exactly where the request sits, who has it, and since when. Notifications go out by email and WhatsApp.
 7. **Deadlines and auto-escalation.** If an approver sits on a request past its SLA (for example 48 hours), it is nudged, then escalated or routed to a delegate.
 8. **Delegation.** A faculty member on leave assigns a delegate for a date range, so nothing waits for someone who is away.
@@ -117,11 +121,13 @@ The trust layer is highlighted because it is the differentiator: anyone can chec
 | SHA-256 hash of the final signed PDF | The PDF itself and attachments |
 | Request ID and request type | Student name, roll number, Aadhaar-linked data |
 | Signer roles and timestamps | Comments, AI summaries, audit details |
+| Merkle root of the approvals (each signed by the approver's own wallet) | Which person holds which wallet |
+| Audit-log checkpoint (latest entry number and hash) | The audit log itself |
 | Issuing college ID (node) | Contact details |
 
 No personal data ever touches the chain, which keeps us aligned with India's data protection law and keeps blockchain costs near zero. Verification simply re-hashes the PDF a verifier holds and checks it against the chain: any edit, even one character, changes the hash and fails.
 
-**Inter-college network:** in the pilot, one university writes to a public EVM testnet. At scale, colleges join a permissioned consortium chain, each running a validator node, which mirrors the model India's National Blockchain Framework already uses for government certificates.
+**Inter-college network:** the registry contract is already built as a permissioned network: each college writes from its own authorised address and only for its own records, and a governance account admits or removes colleges (Proof of Authority at the contract level). It runs on a local chain or on the Polygon Amoy public testnet (Proof of Stake). At scale, colleges join a permissioned consortium chain, each running a validator node, which mirrors the model India's National Blockchain Framework already uses for government certificates.
 
 ## 5. Tech stack (no-code + AI first)
 
@@ -236,7 +242,7 @@ Every part of this already works in India today: the law accepts e-signatures, t
 **Technical feasibility**
 
 - All components are mature, hosted services with free or low-cost tiers; the thin-slice MVP plan in section 6 shows the core loop takes days, not months, to build.
-- Blockchain cost stays flat at scale: instead of one transaction per document, we can batch an hour's hashes into a single Merkle root, so one write covers thousands of approvals.
+- Blockchain cost stays flat at scale: every document already stores its approvals as a single Merkle root, so 20 signers cost the same as 2; the same technique can batch an hour's documents into one root, so one write covers thousands of approvals.
 - Government precedent: India's National Blockchain Framework already stores academic and government certificates, with [34 crore documents verified as of October 2025](https://www.shankariasparliament.com/current-affairs/mains-analysis/national-blockchain-framework-strengthening-governance-through-blockchain-technology), including CBSE certificates.
 
 **Legal feasibility**
@@ -287,7 +293,7 @@ No existing tool combines campus role-mapped routing, AI assistance and public b
 
 - **Role-mapped:** routes by role, not by name.
 - **AI-assisted:** fewer errors, faster approvals.
-- **Tamper-proof:** hash on chain, QR verify.
+- **Tamper-proof:** hash on chain, QR verify, every approver's signature checked by the smart contract itself.
 - **No-code maintainable:** colleges change it themselves.
 - **Network-ready:** every college becomes a node.
 
@@ -299,7 +305,8 @@ The biggest risks are adoption and data protection, not technology; both are han
 
 **Security and privacy by design**
 
-- **No personal data on chain:** only hashes, roles and timestamps; PDFs stay in encrypted storage.
+- **No personal data on chain:** only hashes, roles, timestamps, a Merkle root and pseudonymous wallet addresses; PDFs stay in encrypted storage.
+- **Tamper-evident records:** a hash-chained audit log checkpointed on chain, so an edited, deleted or rolled-back record is detected; only authorised college addresses can write to the registry.
 - **Least-privilege access:** row-level security, so each user sees only what their role allows; every view and action is logged.
 - **DPDP-ready:** India's DPDP Rules, 2025 were notified in November 2025 and their [core operational duties apply from May 2027](https://www.tcsa.in/resources/dpdp-rules-2025-implementation-roadmap). We build consent notices, purpose limitation, data-retention windows, breach alerts and a grievance contact in from day one, and host data in India.
 - **AI guardrails:** AI drafts and summarises but never approves; a human signs every decision, and prompts forbid inventing facts.
@@ -350,7 +357,7 @@ The engine stays the same in every sector; only the form templates and role chai
 
 **Frequently asked questions**
 
-- *Why blockchain and not just a database?* A database owner can silently edit records; a hash on a shared chain lets outsiders verify without trusting the college server, and it scales into a multi-college network.
+- *Why blockchain and not just a database?* A database owner can silently edit records; a hash on a shared chain lets outsiders verify without trusting the college server, and it scales into a multi-college network. The contract even checks each approver's own signature, and the audit trail is checkpointed on chain, so quiet edits to the database are caught.
 - *Is an e-signature legally valid?* Yes for recognised e-signatures under the IT Act; we use OTP sign-off internally and Aadhaar eSign for external documents.
 - *What about privacy?* No personal data on chain; DPDP-aligned consent and retention.
 - *How is this different from an ERP?* ERPs run admissions and fees; we fix the everyday approvals and make them verifiable outside the campus, and we can plug into any ERP.

@@ -100,3 +100,4 @@
 98. **The audit log is a hash chain with on-chain checkpoints** after each anchor. Detects edits, inserted or deleted entries and a restored older database. Checkpoints only move forward.
 99. **Contract version check on connect** (`REGISTRY_VERSION`): an older registry is replaced and everything re-anchored through the existing replay path. Approvals from before wallets give an empty root and verify as before, without the per-signer check.
 100. **Test dates are a year ahead (2027-11-…)** so validity-window tests do not expire with the calendar.
+101. **The local `.env` pins the issuer key, wallet seed and JWT secret** (generated, git-ignored), so a database reset keeps the same signing keys. The live server keeps its own `.env`.
