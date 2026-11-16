@@ -1,6 +1,6 @@
 # CampusSign — Project Overview
 
-Nov 16, 2026 · Team budYweisers (VIT Pune): Siddhesh Chaudhari, Devansh Goyanka, Ayush Jadhav, Shishir Chandanshiv, Arya Deshmukh
+Nov 16, 2026 · Group No. 15 · Blockchain Presentation (VIT Pune): Siddhesh Chaudhari, Devansh Goyanka, Ayush Jadhav, Shishir Chandanshiv, Arya Deshmukh
 
 **One line:** CampusSign turns every signature-chasing paper form in an Indian university into a digital approval that is signed with the approver's own key and locked on a blockchain, so anyone, anywhere, can check it in seconds.
 

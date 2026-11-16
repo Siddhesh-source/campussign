@@ -103,3 +103,5 @@
 101. **The local `.env` pins the issuer key, wallet seed and JWT secret** (generated, git-ignored), so a database reset keeps the same signing keys. The live server keeps its own `.env`.
 102. **The pitch leads with the blockchain** and explains it with plain analogies (fingerprint, public notebook, notary, personal seal, one stamp for all, tamper alarm). Bold framing is allowed; every number and claim stays true, and estimates keep "est.".
 103. **Pitch docs follow the built deck** (10 slides, `out/source/deck.py`), not the earlier draft outline; the tech stack names only what the product actually uses, with Aadhaar eSign, DigiLocker and ERP marked as next.
+104. **Blockchain is shown as one whole system, not a feature list:** a single architecture slide (nodes, contract, transaction, blocks, verifier) carries the five blockchain features as USPs, and a dedicated Security slide answers each attack, since security is what a trust product sells.
+105. **Repository renamed to `campussign`** to match the product; links in README, SECURITY, CONTRIBUTING and issue templates updated (GitHub redirects the old URL).

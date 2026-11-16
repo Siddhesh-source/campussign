@@ -6,4 +6,4 @@
 4. Run `npm test` and make sure it passes.
 5. Open a pull request and fill in the template.
 
-Bugs and feature ideas go in [Issues](https://github.com/Siddhesh-source/mit_wpu/issues/new/choose); questions go in [Discussions](https://github.com/Siddhesh-source/mit_wpu/discussions).
+Bugs and feature ideas go in [Issues](https://github.com/Siddhesh-source/campussign/issues/new/choose); questions go in [Discussions](https://github.com/Siddhesh-source/campussign/discussions).

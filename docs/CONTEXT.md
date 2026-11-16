@@ -2,7 +2,7 @@
 
 **CampusSign** turns signature-chasing paper forms in an Indian university into role-routed digital approvals, signed in one tap and verifiable on a blockchain. Tagline: *No queues. No paper. No forged signatures.*
 
-Sources of truth: `CampusSign — Project Overview.md`, `CampusSign — Pitch Deck Content (10 slides).md`, `out/deck.pptx` (previews in `out/previews/`). On visuals, the built deck wins.
+Sources of truth: `CampusSign — Project Overview.md`, `CampusSign — Pitch Deck Content (12 slides).md`, `out/deck.pptx` (previews in `out/previews/`). On visuals, the built deck wins.
 
 ## Core workflow (must always work)
 

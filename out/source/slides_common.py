@@ -2,10 +2,10 @@
 from kit import *
 
 TAGLINE = "Campus approvals, locked on a blockchain. Anyone can check them."
-TEAM = "Team budYweisers"
+TEAM = "Group No. 15"
 NAMES = ["Siddhesh Chaudhari", "Devansh Goyanka", "Ayush Jadhav", "Shishir Chandanshiv", "Arya Deshmukh"]
 MEMBERS = "   ·   ".join(NAMES)
-EVENT = "Idea submission  ·  No-code and AI Hackathon, MIT-WPU Pune"
+EVENT = "Blockchain Presentation  ·  Group No. 15"
 
 
 def title_A(d, total):
@@ -16,12 +16,12 @@ def title_A(d, total):
     # team, college and members as one ruled table
     ty = 4.5
     line(s, ML, ty, W - MR, ty, t["ink"], 1.0)
-    cols = [(ML, 3.3, "Team"), (ML + 3.6, 2.6, "College"), (ML + 6.5, CW - 6.5, "Members")]
+    cols = [(ML, 3.3, "Group"), (ML + 3.6, 2.6, "College"), (ML + 6.5, CW - 6.5, "Members")]
     for i, (x, w, lab) in enumerate(cols):
         text(s, x, ty + 0.18, w, 0.28, lab, t["semi"], 12, t["muted"])
         if i:
             line(s, x - 0.3, ty + 0.18, x - 0.3, ty + 1.75, t["rule"], 0.75)
-    text(s, cols[0][0], ty + 0.5, cols[0][1], 0.55, "budYweisers", t["head"], 28, t["accent"])
+    text(s, cols[0][0], ty + 0.5, cols[0][1], 0.55, "Group No. 15", t["head"], 28, t["accent"])
     text(s, cols[1][0], ty + 0.5, cols[1][1], 0.55, "VIT Pune", t["head"], 28, t["ink"])
     # five members in two columns, same ruled look
     half = (cols[2][1] - 0.3) / 2
@@ -85,7 +85,7 @@ TITLES = {"A": title_A, "B": title_B, "C": title_C}
 NOTES_1 = ("Open: Every one of us has stood outside a cabin waiting for one signature, and at the end we got a piece "
            "of paper anyone could fake. CampusSign kills both problems. A student submits once, the right people sign "
            "on their phone, and every approval is locked on a blockchain: a public record nobody can quietly change, "
-           "not even us. Anyone, anywhere, can check it in seconds. We are team budYweisers from VIT Pune: "
+           "not even us. Anyone, anywhere, can check it in seconds. We are Group No. 15 from VIT Pune: "
            "Siddhesh Chaudhari, Devansh Goyanka, Ayush Jadhav, Shishir Chandanshiv and Arya Deshmukh.")
 
 

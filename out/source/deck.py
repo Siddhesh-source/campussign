@@ -4,7 +4,7 @@ from kit import *
 from pptx.enum.shapes import MSO_SHAPE
 from slides_common import title_A, slide_trust, TAGLINE
 
-TOTAL = 10
+TOTAL = 12
 
 
 def label(s, t, x, y, w, txt, color=None):
@@ -329,7 +329,7 @@ def slide_tech(d):
     text(s, ML, fy, CW, 0.35, [[("Shaded rows are the blockchain layer.  ", t["semi"], 14, t["ink"]),
                                 ("Every tool is open source and free, so a college is never locked in.",
                                  t["body"], 13, t["muted"])]], t["body"], 13, t["muted"])
-    footer(s, d, 6, TOTAL)
+    footer(s, d, 7, TOTAL)
 
 
 # ---------------------------------------------------------------- 7. routing + AI
@@ -400,7 +400,7 @@ def slide_routing(d):
     rect(s, ix + (pw - 0.5) / 2 + 0.1, py + 3.5, (pw - 0.5) / 2, 0.42, fill=t["bg"], line=t["faint"], lw=1.0)
     text(s, ix + (pw - 0.5) / 2 + 0.1, py + 3.5, (pw - 0.5) / 2, 0.42, "Return", t["semi"], 11, t["ink"], align="c", anchor="m")
     text(s, px, py + ph + 0.08, pw, 0.25, "HoD inbox", t["body"], 10, t["faint"], align="c")
-    footer(s, d, 7, TOTAL)
+    footer(s, d, 8, TOTAL)
 
 
 # ---------------------------------------------------------------- 8. why we win
@@ -497,7 +497,7 @@ def slide_impact(d):
         text(s, sx, y, W - MR - sx, 0.28, [[("SDG " + n + "  ", t["semi"], 14, t["accent"]), (nm, t["semi"], 14, t["ink"])]],
              t["semi"], 14, t["ink"])
         text(s, sx, y + 0.25, W - MR - sx, 0.25, why, t["body"], 11, t["muted"])
-    footer(s, d, 9, TOTAL, "Assumptions: 15 forms × 3 sheets per student; 45 min chasing per form; 2 signers, 2 min paper vs 20 s digital. "
+    footer(s, d, 11, TOTAL, "Assumptions: 15 forms × 3 sheets per student; 45 min chasing per form; 2 signers, 2 min paper vs 20 s digital. "
                            "Per sheet: 12.7 g CO2e, 1/8,333 tree (Environmental Paper Network calculator v3.2, via PaperCut).")
 
 
@@ -548,8 +548,157 @@ def slide_roadmap(d):
         fy = 4.05 + i * 0.95
         text(s, fx, fy, 4.6, 0.4, a, t["head"], 20, t["accent"])
         text(s, fx, fy + 0.38, 4.6, 0.4, b, t["body"], 12, t["muted"], spacing=1.05)
-    footer(s, d, 10, TOTAL, "Est.: 4.5 lakh sheets at ₹1-2 a page = ₹4.5-9 lakh vs ₹5 lakh at ₹50 × 10,000 students. "
+    footer(s, d, 12, TOTAL, "Est.: 4.5 lakh sheets at ₹1-2 a page = ₹4.5-9 lakh vs ₹5 lakh at ₹50 × 10,000 students. "
                             "NAAC metric 6.2.3. Special Campaign 5.0: PIB, Oct 2025.")
+
+
+# ---------------------------------------------------------------- blockchain architecture + USPs
+def slide_chain(d, num):
+    t = d.t
+    s = d.new_slide(
+        "This is the blockchain behind CampusSign, on one page. On the left is one college running CampusSign. Inside "
+        "it, every approver has their own wallet, a personal key; every document's signatures are squeezed into one "
+        "Merkle root; and every line of history is glued to the line before it. When a document is finished, the "
+        "college sends one transaction to our Ethereum smart contract, DocumentRegistry, written in Solidity and run "
+        "by the Ethereum Virtual Machine. The contract does not live on one computer: every node in the network keeps "
+        "a full copy, and the nodes are the colleges themselves plus validators. Each transaction lands in a block, "
+        "and each block points to the one before it, so changing anything old breaks everything after it. On the "
+        "right are the six things that make our chain stand out, each one a real feature in the product. And the "
+        "verifier on the bottom? They read the contract for free, no gas, no account, no phone call.")
+    header(s, d, "Blockchain Architecture", "One Ethereum smart contract, shared by every college, guarding every approval.")
+    top = 1.95
+    # ---- one college's CampusSign server
+    bx, bw, bh = ML, 2.2, 2.75
+    rect(s, bx, top, bw, bh, fill=t["panel"])
+    text(s, bx + 0.15, top + 0.12, bw - 0.2, 0.28, "College A server", t["semi"], 12.5, t["ink"])
+    text(s, bx + 0.15, top + 0.4, bw - 0.2, 0.25, "CampusSign app", t["body"], 10, t["muted"])
+    inner = [("Approver wallets", "one key each"), ("Merkle tree", "all signatures, one root"),
+             ("SHA-256", "fingerprint of the PDF"), ("Audit log", "hash-linked lines")]
+    for i, (a, b) in enumerate(inner):
+        iy = top + 0.78 + i * 0.48
+        rect(s, bx + 0.15, iy, bw - 0.3, 0.4, fill=t["bg"], line=t["rule"], lw=0.75)
+        text(s, bx + 0.25, iy + 0.02, bw - 0.45, 0.2, a, t["semi"], 10, t["ink"])
+        text(s, bx + 0.25, iy + 0.2, bw - 0.45, 0.2, b, t["body"], 9, t["muted"])
+    # ---- the network: college nodes + validators around the contract
+    cx, cy, r = 5.65, 3.15, 1.3
+    angles = [180, 120, 60, 0, 300, 240]
+    names = ["College A", "College B", "College C", "Validator", "Validator", "Validator"]
+    pts = [(cx + r * math.cos(math.radians(a)), cy - r * math.sin(math.radians(a))) for a in angles]
+    for i in range(6):
+        (x1, y1), (x2, y2) = pts[i], pts[(i + 1) % 6]
+        line(s, x1, y1, x2, y2, t["rule"], 1.25)
+    for (px_, py_) in pts:
+        line(s, px_, py_, cx + (px_ - cx) * 0.62, cy + (py_ - cy) * 0.55, t["faint"], 0.75, dash=True)
+    for i, ((px_, py_), nm) in enumerate(zip(pts, names)):
+        college = nm.startswith("College")
+        circle(s, px_, py_, 0.36, fill=t["accent"] if college else t["bg"], line=t["accent"], lw=1.5)
+        if angles[i] in (180,):
+            continue  # labelled by the arrow from the server
+        right = angles[i] in (60, 0, 300)
+        lx = px_ + 0.25 if right else px_ - 1.25
+        ly = py_ - 0.4 if angles[i] in (120, 60) else (py_ + 0.2 if angles[i] in (300, 240) else py_ - 0.12)
+        if angles[i] == 0:
+            lx, ly = px_ + 0.25, py_ - 0.12
+        text(s, lx, ly, 1.0, 0.25, nm, t["semi"] if college else t["body"], 10, t["ink"] if college else t["muted"],
+             align="l" if right else "r")
+    # contract in the middle
+    kw, kh = 1.95, 1.0
+    rect(s, cx - kw / 2, cy - kh / 2, kw, kh, fill=t["accent"])
+    text(s, cx - kw / 2 + 0.12, cy - kh / 2 + 0.1, kw - 0.2, 0.28, "DocumentRegistry", t["semi"], 12, "FFFFFF")
+    text(s, cx - kw / 2 + 0.12, cy - kh / 2 + 0.38, kw - 0.2, 0.55, "Solidity smart contract, run by the EVM on every node",
+         t["body"], 9, "DCE6F2", spacing=1.05)
+    # server -> College A node
+    ax0, ax1 = bx + bw, pts[0][0] - 0.2
+    line(s, ax0 + 0.05, cy, ax1, cy, t["accent"], 1.5, arrow=True)
+    text(s, ax0 + 0.05, cy - 0.32, ax1 - ax0, 0.25, "seal tx", t["mono"], 9.5, t["accent"], align="c")
+    text(s, ax0 + 0.05, cy + 0.05, ax1 - ax0, 0.25, "College A", t["semi"], 10, t["ink"], align="c")
+    text(s, cx - 2.1, cy + r + 0.45, 4.2, 0.25, "Every node keeps a full copy of the contract",
+         t["body"], 10, t["muted"], align="c")
+    text(s, cx - 2.1, cy + r + 0.68, 4.2, 0.25, "Polygon Amoy (Proof of Stake) or college chain (Proof of Authority)",
+         t["body"], 9, t["faint"], align="c")
+    # ---- blocks
+    by = 5.5
+    text(s, ML, by + 0.12, 0.8, 0.3, "Blocks", t["semi"], 11, t["muted"])
+    blocks = [("#1041", False), ("#1042", False), ("#1043", True), ("#1044", False)]
+    bx0, bwid, gap = ML + 0.85, 1.25, 0.32
+    for i, (nm, hit) in enumerate(blocks):
+        x = bx0 + i * (bwid + gap)
+        rect(s, x, by, bwid, 0.55, fill=t["ok_bg"] if hit else t["bg"], line=t["ok"] if hit else t["rule"], lw=1.25 if hit else 1.0)
+        text(s, x + 0.1, by + 0.04, bwid - 0.15, 0.24, "Block " + nm, t["mono"], 9.5, t["ink"])
+        text(s, x + 0.1, by + 0.27, bwid - 0.15, 0.24, "seal tx inside" if hit else "prev hash ←", t["body"], 9,
+             t["ok"] if hit else t["faint"])
+        if i < len(blocks) - 1:
+            line(s, x + bwid + 0.04, by + 0.27, x + bwid + gap - 0.04, by + 0.27, t["faint"], 1.0, arrow=True)
+    text(s, ML, by + 0.68, 7.2, 0.3, [[("Verifier scans the QR → ", t["body"], 10.5, t["muted"]),
+                                      ("reads the contract for free, no gas → Verified or Tampered", t["semi"], 10.5, t["ok"])]],
+         t["body"], 10.5, t["muted"])
+    # ---- USPs
+    ux = 8.35
+    uw = W - MR - ux
+    line(s, ux - 0.25, top - 0.05, ux - 0.25, 6.45, t["rule"], 0.75)
+    label(s, t, ux, top - 0.08, uw, "Why this blockchain layer stands out")
+    usps = [("A wallet for every approver", "Each approval signed with the person's own key", "keys · ECDSA"),
+            ("One stamp for all signatures", "One Merkle root: 2 signers cost the same as 20", "Merkle tree"),
+            ("The contract checks the signer", "ecrecover + Merkle proof in Solidity: no trust in us", "EVM"),
+            ("A network of colleges", "Each college writes only its own records", "consortium · PoA"),
+            ("History nobody can rewrite", "Hash-linked audit log, latest line copied on chain", "hash chain"),
+            ("Versions and revocation on chain", "Old copy: Superseded. Cancelled: Revoked.", "contract state")]
+    for i, (a, b, tag) in enumerate(usps):
+        y = top + 0.28 + i * 0.7
+        text(s, ux, y, 0.3, 0.3, str(i + 1), t["head"], 13, t["ok"])
+        text(s, ux + 0.3, y, uw - 1.45, 0.3, a, t["semi"], 12.5, t["ink"])
+        text(s, W - MR - 1.25, y + 0.02, 1.25, 0.28, tag, t["mono"], 8.5, t["accent"], align="r")
+        text(s, ux + 0.3, y + 0.29, uw - 0.3, 0.3, b, t["body"], 10, t["muted"])
+        if i < len(usps) - 1:
+            line(s, ux + 0.3, y + 0.64, W - MR, y + 0.64, t["rule"], 0.75)
+    footer(s, d, num, TOTAL, "All six are built and tested: contract in contracts/contracts/DocumentRegistry.sol; 11 contract tests, 123 server tests.")
+
+
+# ---------------------------------------------------------------- security
+def slide_security(d, num):
+    t = d.t
+    s = d.new_slide(
+        "In a trust product, security is not a feature, it is the product. So here is every serious attack, and our "
+        "answer. A forged PDF fails the fingerprint check. Sealing two versions as current, the registry's version of "
+        "double spending, is refused by the contract. Signing as someone else fails because every approver has their "
+        "own key, and each signature is tied to one request and one version of the form. If an insider edits our "
+        "database, the contract's own signer check fails and the audit hash chain breaks. A fake college cannot write, "
+        "because only approved addresses can, each for its own records: that stops Sybil attacks. The contract makes "
+        "no outside calls and holds no money, so reentrancy has nothing to grab. 51% and eclipse attacks are about the "
+        "network, so we rely on many validators: college nodes or Polygon. PIN guessing is rate limited, and nothing "
+        "personal ever goes on chain. One honest limit: approver keys are held by our server behind each PIN, so that "
+        "secret is guarded like the database.")
+    header(s, d, "Security", "In a trust product, security is the product: every attack has an answer.")
+    rows = [("Forged PDF", "Change a date or a name on a real approval", "Fingerprint no longer matches the chain: Tampered", "Chain"),
+            ("Double sealing", "Seal two versions as current (double spend)", "Contract keeps one Active version; duplicates refused", "Chain"),
+            ("Fake signer", "Sign as the HoD, or reuse an old signature", "Own key per approver, bound to request, version, form", "Chain"),
+            ("Insider edit", "Rewrite who approved inside the database", "Contract re-checks signers; audit hash chain breaks", "Chain"),
+            ("Sybil / rogue college", "A fake issuer floods the registry", "Only approved college addresses can write", "Chain"),
+            ("Reentrancy", "Call back into the contract mid-write", "No outside calls and no funds held: nothing to grab", "Chain"),
+            ("51% / eclipse", "Rewrite history or cut a node off", "Many validators: college nodes (PoA) or Polygon (PoS)", "Network"),
+            ("PIN guessing", "Try all 10,000 PINs", "Attempts rate limited; every attempt logged", "App"),
+            ("Privacy leak", "Personal data public forever", "Only fingerprints, IDs and dates on chain (DPDP)", "Chain")]
+    cols = [(ML, 2.4, "Threat"), (ML + 2.5, 3.6, "What the attacker tries"), (ML + 6.2, 4.6, "How CampusSign stops it")]
+    y0 = 1.85
+    for x, w, h in cols:
+        text(s, x, y0, w, 0.28, h, t["semi"], 11.5, t["muted"])
+    text(s, W - MR - 0.95, y0, 0.95, 0.28, "Where", t["semi"], 11.5, t["muted"], align="r")
+    line(s, ML, y0 + 0.33, W - MR, y0 + 0.33, t["ink"], 1.0)
+    rh = 0.45
+    tag_col = {"Chain": t["ok"], "Network": t["accent"], "App": t["accent"]}
+    for i, (a, b, c, tag) in enumerate(rows):
+        y = y0 + 0.4 + i * rh
+        text(s, ML + 0.1, y, cols[0][1], rh - 0.06, a, t["semi"], 13, t["ink"], anchor="m")
+        text(s, cols[1][0], y, cols[1][1], rh - 0.06, b, t["body"], 12, t["muted"], anchor="m")
+        tick(s, cols[2][0] + 0.1, y + (rh - 0.06) / 2, 0.16, t["ok"], 1.5)
+        text(s, cols[2][0] + 0.3, y, cols[2][1] - 0.3, rh - 0.06, c, t["body"], 12, t["ink"], anchor="m")
+        text(s, W - MR - 1.0, y, 0.92, rh - 0.06, tag, t["semi"], 11, tag_col[tag], align="r", anchor="m")
+        line(s, ML, y + rh - 0.03, W - MR, y + rh - 0.03, t["rule"], 0.75)
+    fy = y0 + 0.4 + len(rows) * rh + 0.12
+    text(s, ML, fy, CW, 0.32, [[("Honest limit:  ", t["semi"], 12, t["ink"]),
+                                ("approver keys sit on our server behind each PIN, so that secret is guarded like the database.",
+                                 t["body"], 12, t["muted"])]], t["body"], 12, t["muted"])
+    footer(s, d, num, TOTAL)
 
 
 def build(theme, out):
@@ -560,9 +709,11 @@ def build(theme, out):
     slide_scale(d)
     slide_solution(d)
     slide_arch(d)
+    slide_chain(d, 6)
     slide_tech(d)
     slide_routing(d)
-    slide_trust(d, 8, TOTAL)
+    slide_trust(d, 9, TOTAL)
+    slide_security(d, 10)
     slide_impact(d)
     slide_roadmap(d)
     d.save(out)
