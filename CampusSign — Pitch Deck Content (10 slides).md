@@ -1,163 +1,128 @@
 # CampusSign — Pitch Deck Content (10 slides)
 
-Oct 20, 2026 · @Jayesh
+Nov 16, 2026 · Team budYweisers
+
+Built deck: `out/deck.pptx` (PDF: `out/budYweisers_Paperless_Campus.pdf`, previews in `out/previews/`). Source: `out/source/deck.py` and `out/source/slides_common.py`, theme "Public Record". This file is the words; the built deck is the look.
 
 ## Deck at a glance
 
-Ten slides tell one story: a familiar pain, its true size, a simple fix, proof that the fix works and is trustworthy, and why it matters beyond one campus. Every slide carries one idea, one visual and one trust cue.
+Ten slides tell one story: **a signature on paper cannot prove itself. A signature on CampusSign can, because it is locked on a blockchain.** Every slide carries one idea, one picture and one proof point, in plain words a first-year student could repeat.
 
-**Storyline arc**
+**Storyline**
 
-1. **Hook** (slides 1 to 3): the paper chase every judge has lived through, its scale, and the forgery risk.
-2. **Fix** (slides 4 to 6): submit once, route by role, sign in one tap; how it is built with no-code and AI.
-3. **Proof** (slides 7 and 8): the blockchain seal, the legal basis, and why alternatives fall short.
-4. **Payoff** (slides 9 and 10): impact, carbon and SDGs, then adoption and the path beyond education.
+1. **Hook** (slides 1 to 3): the paper chase everyone has lived through, its size, and the real problem underneath: nobody can prove a paper approval is genuine.
+2. **Fix** (slides 4 to 7): submit once, route by role, sign with your own digital key, lock the result on a blockchain; what it is built with; the four locks on every approval.
+3. **Proof** (slide 8): change one character and the proof breaks, live.
+4. **Payoff** (slides 9 and 10): paper, carbon and time saved, then a nationwide network of trust.
 
-**Design system**
+**How we talk about the blockchain (use these everywhere)**
 
-| Element | Choice | Why |
-| --- | --- | --- |
-| Primary colour | Deep indigo #1E2A5A | Reads as institutional and trustworthy |
-| Verified / eco colour | Emerald #0F9D74 | The "verified" tick and every environmental number |
-| Accent | Saffron #F59E0B | One highlight per slide; an Indian cue without being loud |
-| Problem / tampered | Red #DC2626 | Used only on slides 2, 3 and the tampered state on slide 7 |
-| Background | Off-white #F8FAFC with slate #475569 body text | Clean, prints well, projector-safe |
-| Headline font | Poppins SemiBold, 28 to 32 pt | Modern and legible from the back row |
-| Body font | Inter Regular, 14 to 16 pt | Neutral and compact |
-| Icons | One line-icon set only (Lucide or Phosphor, both free) | Consistent stroke weight looks professional |
+| Technical idea | Say it like this |
+| --- | --- |
+| Blockchain | A public notebook that thousands of computers keep copies of. Anyone can read it; nobody can rub anything out. |
+| SHA-256 hash | A fingerprint for a file. Change one letter and the fingerprint is completely different. |
+| Smart contract | A notary that never sleeps, never forgets and cannot be bribed. |
+| Approver wallet / private key | A personal seal only you can press. Your PIN unlocks it. |
+| Merkle root | Every signature on a document squeezed into one tiny stamp. |
+| On-chain signer check | The blockchain itself tells you who signed. You do not have to trust us. |
+| Hash-chained audit log | Every line of history is glued to the one before it. Pull one out and the alarm goes off. |
+| Permissioned network | Each college writes only its own records. A council of colleges decides who joins. |
 
-**Visual rules**
+**Design rules (unchanged)**
 
-- Headline = a full-sentence claim, not a topic ("Approvals take days, not minutes", never "Problem").
-- At most 25 words of body text per slide; numbers set large, labels small.
-- Diagrams over bullets: flows, layered blocks, before/after, matrices.
-- A small source line on every slide that shows a number.
-- The green tick and QR motif repeat on slides 1, 4, 7 and 10 so the "verified" idea sticks.
-- The hackathon timeline stays out of the deck; only the event name and team appear on the title slide.
+- Theme "Public Record": white background, ink `#101418`, accent blue `#1D4F91`, green `#1E7A4C` for Verified and every saving, red `#B42318` only for problems and Tampered. Public Sans for words, IBM Plex Mono for hashes.
+- Headline = a full-sentence claim, never a topic word.
+- Diagrams over bullets; numbers big, labels small; a source line on every slide with a number; "est." on every estimate.
+- The green tick returns on slides 4, 7 and 8 so "Verified" sticks.
 
-## Slides 1 to 3: the hook
-
-The first three slides make judges feel the pain, then show it is national in size and a trust problem, not just an inconvenience.
+## Slides
 
 ### Slide 1 · Title
 
-- **Headline:** CampusSign
-- **Tagline:** Every approval. One tap. Verified forever.
-- **On slide:** product name, tagline, team names, college, and the event name in small type at the foot.
-- **Visual:** a paper form crowded with signatures on the left, an arrow, and a phone showing "Approved" with a green tick and a QR code on the right.
-- **Trust cue:** a small green "Verified on chain" badge on the phone.
-- **Say:** "Every one of us has stood outside a cabin waiting for a signature. We are here to end that."
+- **On slide:** CampusSign · *Campus approvals, locked on a blockchain. Anyone can check them.* · Team budYweisers · VIT Pune · Siddhesh Chaudhari, Devansh Goyanka, Ayush Jadhav, Shishir Chandanshiv, Arya Deshmukh.
+- **Say:** "Every one of us has stood outside a cabin waiting for one signature, and at the end we got a piece of paper anyone could fake. CampusSign kills both problems. Every approval is locked on a blockchain: a public record nobody can quietly change, not even us."
 
-### Slide 2 · The problem
+### Slide 2 · Problem Statement
 
-- **Headline:** One approval. Four cabins. Three days.
-- **On slide:** a journey line: Student → Faculty coordinator → HoD ("absent, come tomorrow") → Dean Student Affairs → Security. A red loop marked "typo, reprint" goes back to the start. Three callouts underneath: *lectures missed*, *faculty interrupted*, *no tracking*. A footer line: "\~15 such forms per student per year".
-- **Visual:** the journey as a winding path with red clock icons at each wait.
-- **Trust cue:** a real photo of your own college's no-dues sheet, names blurred. Real artefacts beat stock images.
-- **Say:** walk Riya's event permission in 20 seconds; end with "and this is one of fifteen forms."
+- **Headline:** Four cabins, three days, and the result is a paper anyone could fake.
+- **On slide:** Riya's three-day journey: faculty coordinator (wrong date, reprint), HoD (away, come tomorrow), Dean Student Affairs (another queue), Security (final stamp). Tally: **4** signatures chased · **3** days · **2** lectures missed · **0** ways to prove it. The paper form she carries, stamped REPRINT.
+- **Say:** "Four signatures, three days, two lectures. And the worst part: at the end she holds a paper that anyone with a pen and a photocopier could fake."
 
-### Slide 3 · Scale and the trust gap
+### Slide 3 · Scale of the Problem
 
-- **Headline:** At India's scale, the paper trail is huge and impossible to verify.
-- **On slide:** three number tiles: **4.50 crore** students (AISHE 2023-24) · **\~67 crore** paper approvals a year (estimate) · **1 in 20** education checks flag a discrepancy (AuthBridge 2025). Sub-line: \~200 crore sheets and at least 25,400 tonnes of CO2e a year (estimate).
-- **Visual:** three large tiles; a magnifying glass over a signature on the third tile.
-- **Trust cue:** every number carries its source in a footer, and estimates are marked "est."
-- **Say:** "Slow is bad. Unverifiable is worse. A wet-ink signature cannot prove itself to anyone outside the campus."
+- **Headline:** Crores of approvals a year, and not one of them can prove it is genuine.
+- **On slide:** **4.50 crore** students (AISHE 2023-24) · **~67 crore** paper approvals a year (est.) · **1 in 20** education checks flag a problem, mostly fake certificates (AuthBridge 2025). Who carries the load: students, faculty, an admin office whose files anyone with access can quietly change, students who cannot easily reach every cabin.
+- **Close line:** *Slow is bad. Impossible to verify is worse. A signature should prove itself.*
 
-## Slides 4 to 6: the fix
+### Slide 4 · Proposed Solution
 
-These slides answer "what is it, how is it built, and why is it smart" with three diagrams and almost no bullets.
+- **Headline:** Submit once. The right people sign. The blockchain remembers forever.
+- **On slide:** five steps: **Request** (fill the form once) → **Route** (by role, not by name) → **Sign** (PIN + your own digital key) → **Seal** (locked on blockchain) → **Verify** (anyone scans the QR). Works for: event permission, on-duty, bonafide, no-dues, any PDF to sign, custom request. Time bar: 2 to 4 days on paper vs same day (target).
+- **Say:** "Every tap signs with the approver's own key, like a personal seal nobody else can copy. When the last person signs, the PDF's fingerprint is locked on the blockchain. From then on anyone gets the truth in seconds: Verified, Superseded, Revoked or Tampered."
 
-### Slide 4 · The solution
+### Slide 5 · System Architecture
 
-- **Headline:** Submit once. The right people sign. Anyone can verify.
-- **On slide:** a 5-step horizontal flow with one icon each: **Request** (pick a form, AI pre-fills) → **Route** (by role, not name) → **Sign** (one tap, OTP or Aadhaar eSign) → **Seal** (hash on blockchain) → **Verify** (scan QR). Under it, one line: "Event permissions, OD, bonafide, NOC, no-dues, LOR and more."
-- **Visual:** the flow as five rounded chips joined by arrows; the last chip in emerald with a tick.
-- **Trust cue:** the green tick motif returns on "Verify".
-- **Say:** "Three days becomes the same day, and the paper never exists."
+- **Headline:** One app does the paperwork; the blockchain is the judge nobody can bribe.
+- **On slide:** students, approvers, admin office and verifiers → one web app (React, installs on a phone) → workflow (Node.js server: who signs, deadlines, escalation, delegation, email) → sign and seal (PIN + approver's own key, PDF with QR, SHA-256 fingerprint) → **Blockchain** (smart contract on Polygon Amoy or a college chain). Data in SQLite with a chained audit log. A gate phone checks the QR with no internet. Connects to a public block explorer and email (AWS SES); next: Aadhaar eSign, DigiLocker, college ERP.
+- **Trust line:** *Holds fingerprints, a proof of signers and status. No personal data.*
 
-### Slide 5 · Architecture and tools
+### Slide 6 · Tech Stack
 
-- **Headline:** Six thin layers, built entirely with no-code and AI tools.
-- **On slide:** a stacked block diagram, each layer with its tool chips on the right: Users · Experience (Lovable / Softr) · AI (Gemini or Claude via n8n, Sarvam for Hindi and Marathi) · Workflow and identity (n8n, Supabase Auth) · Data (Supabase Postgres + Storage) · Trust (Polygon Amoy for the MVP, permissioned consortium chain at scale). A side rail: Aadhaar eSign, DigiLocker, APAAR, WhatsApp.
-- **Visual:** the layer stack with the trust layer highlighted.
-- **Trust cue:** a small note "No personal data on chain" beside the trust layer.
-- **Say:** "No-code is a feature: a college IT cell can add a form or change an approval chain in minutes, without a vendor."
+- **Headline:** Open-source from top to bottom; the blockchain layer is the heart of it.
+- **On slide (shaded rows = blockchain layer):**
 
-### Slide 6 · Role routing and AI in action
+| Layer | Built with | Also works with | What it does |
+| --- | --- | --- | --- |
+| Web app | React + Vite | Any browser | Student, approver, admin, verify and gate screens |
+| Server and workflow | Node.js + Express | | Role routing, deadlines, escalation, delegation |
+| Data and files | SQLite | Postgres | Forms, PDFs, hash-chained audit log |
+| **Smart contract** | **Solidity** | | Seals, versions, revocations, signer check |
+| **Chain connection** | **ethers.js** | | Sends seals, reads proofs, waits for blocks |
+| **Blockchain network** | **Polygon Amoy** | College chain | Public test network, or a private one per college |
+| **Digital signatures** | **Ed25519 + wallets** | Aadhaar eSign (next) | College key for the QR; one key per approver |
+| PDF and email | pdf-lib + QR | AWS SES | Sealed PDF with QR code; email alerts |
 
-- **Headline:** The system knows who must sign, in what order, and helps them decide in seconds.
-- **On slide (left half):** an example chain: Event permission → Faculty coordinator → HoD → Dean SA, with Security in parallel. Tags: *SLA 48 h*, *auto-escalate*, *delegate on leave*.
-- **On slide (right half):** four AI cards: **Classify and auto-fill** · **Completeness check** · **2-line approver summary** · **Status chatbot in English, Hindi, Marathi**.
-- **Visual:** chain diagram on the left, a phone mock of the HoD inbox showing an AI summary on the right.
-- **Trust cue:** one line "AI assists, humans decide."
-- **Say:** "Roles, not names, so when a HoD changes, nothing breaks."
+- **Close line:** *Every tool is open source and free, so a college is never locked in.*
 
-## Slides 7 to 10: proof and payoff
+### Slide 7 · Workflow and Blockchain Proof
 
-The close builds trust (law, cryptography, comparison), then lands the impact and a path far beyond one campus.
+- **Headline:** The system knows who must sign; the blockchain remembers that they did.
+- **On slide (left):** event permission routed by role: student → faculty coordinator (48 h deadline, then a reminder) → HoD (on leave? goes to the delegate) with Security in parallel → Dean Student Affairs (too slow? auto-escalates) → sealed on the blockchain.
+- **On slide (middle), four locks on every approval:** *Your own digital key* (only you can unlock it) · *One stamp for all* (all signatures in one Merkle root) · *The chain checks it* (the contract confirms each signer) · *Tamper alarm* (edit a record and the hash chain breaks). Close: **People sign. The chain remembers.**
+- **On slide (right):** the HoD inbox: Robotics fest, 5 Nov; "Your signing key 0x7a3f…c91e. Approve with your PIN; sealed on chain."; Approve / Return.
 
-### Slide 7 · The trust layer
+### Slide 8 · Trust and Verification
 
 - **Headline:** Change one character and the proof breaks.
-- **On slide:** a flow: Signed PDF → SHA-256 fingerprint → written to blockchain → QR on the PDF. Then a fork: original PDF → **Verified** (emerald tick); edited PDF → **Tampered** (red cross). Under the flow, three small proof chips: *Every approver signs with their own wallet* · *One Merkle root proves every signature* · *Audit trail checkpointed on chain*. A row of five trust badges: *IT Act s.5: e-sign = wet ink* · *Aadhaar eSign* · *BSA 2023 s.61: e-records = paper* · *DPDP-ready, no personal data on chain* · *Same model as India's National Blockchain Framework*.
-- **Visual:** the fork is the hero image; badges sit as a strip at the foot.
-- **Trust cue:** the whole slide is the trust cue; keep it calm and uncluttered.
-- **Say:** "A recruiter in Bengaluru can verify a NOC from Pune in two seconds, without a phone call. And the chain does not just say the document exists: the smart contract itself checks each approver's signature, so nobody has to take the college server's word for who signed."
+- **On slide:** Signed PDF → SHA-256 fingerprint → locked on the blockchain (fingerprint, signers' proof, status) → QR code on the PDF. Then the fork: original document, same fingerprint → **Verified**; request no. 0412 edited to 0413, different fingerprint → **Tampered**. Strip: *Smart contract checks every signer itself* · *IT Act 2000 s.5* · *BSA 2023 s.61* · *DPDP Rules 2025: no personal data on chain* · *Same model as India's National Blockchain Framework*.
+- **Say:** "Think of a fingerprint for a file. Change one letter and it is completely different. We lock that fingerprint on the blockchain. Here we changed one character, and the proof breaks. And the contract checks each approver's own signature itself, so a recruiter in Bengaluru can trust a NOC from Pune without a single phone call, and without trusting our server."
 
-### Slide 8 · Why we win
-
-- **Headline:** Others solve one slice; we combine all five.
-- **On slide:** a matrix. Rows: Paper · Google Forms + email · College ERP / Samarth · Generic e-sign tools · **CampusSign**. Columns: Role routing · AI assist · Legal e-sign · Public verification · No-code maintainable. Ticks and crosses; our row is fully ticked and highlighted.
-- **Visual:** the matrix only.
-- **Trust cue:** one line "Complements DigiLocker and ERPs; does not replace them."
-- **Say:** "We are the everyday approvals layer that plugs into what colleges already run."
-
-### Slide 9 · Impact and SDGs
+### Slide 9 · Impact and Benefits
 
 - **Headline:** One campus saves lakhs of sheets; India saves tens of thousands of tonnes of CO2e.
-- **On slide (per 10,000-student university, per year, estimates):** 1.5 lakh approvals digitised · \~4.5 lakh sheets · \~1.1 lakh student-hours · \~8,000 faculty-hours · at least 5.7 t CO2e · \~54 trees. National line: at least 25,400 t CO2e and \~2.4 lakh trees a year. SDG tiles: 4, 9, 12, 13, 15, 16.
-- **Visual:** big emerald numbers on the left, six SDG tiles on the right.
-- **Trust cue:** "Assumptions: 15 forms × 3 sheets per student; footprint factors from the Environmental Paper Network calculator."
-- **Say:** "Every tap is a sheet not printed. At scale that is a forest."
+- **On slide (per 10,000-student university per year, est.):** 1.5 lakh approvals off paper · ~4.5 lakh sheets · ≥5.7 t CO2e · ~54 trees · ~1.1 lakh student-hours · ~8,000 faculty-hours. All of India: ~67 crore approvals, ~200 crore sheets, ≥25,400 t CO2e, ~2.4 lakh trees. SDGs 4, 9, 12, 13, 15, 16 (16: every decision locked on chain).
+- **Say:** "Every tap is a sheet not printed, and every approval is a record that can never be quietly changed."
 
-### Slide 10 · Roadmap and future scope
+### Slide 10 · Roadmap and Future Scope
 
-- **Headline:** From one department to every institution that runs on signatures.
-- **On slide (top):** four phases with gates: MVP prototype → Department pilot (*gate: admin approves*) → University rollout (*gate: turnaround halved*) → College network (*gate: 3 partner colleges*).
-- **On slide (bottom):** a hub with six spokes: Government offices · Hospitals · Banks and NBFCs · Corporates · Municipal and land · Schools and boards. One line: "Special Campaign 5.0 weeded out \~19.21 lakh government files in one month."
-- **Visual:** roadmap band above, hub-and-spoke below.
-- **Trust cue:** pricing line "₹50 per student per year, about what the campus already spends on the paper" and "NAAC 6.2.3 counts e-governance".
-- **Close:** the tagline again, the QR of a live sealed sample document, team names.
+- **Headline:** From one campus chain to a nationwide network of trust.
+- **On slide:** **MVP built** (sign, seal, amend, revoke, verify) → gate: admin approves → **Department pilot** → gate: turnaround halved → **University rollout** (Aadhaar eSign and DigiLocker) → gate: 3 partner colleges → **College network** (each college a chain node). Same engine beyond education: government offices, hospitals, banks and NBFCs, corporates, municipal and land, schools and boards. Facts: ₹50 per student a year (est.) · NAAC 6.2.3 counts e-governance · 19.21 lakh government files weeded out in one month (Special Campaign 5.0).
+- **Close:** "Picture one trust network where a NOC or internship letter from any college can be checked in two seconds. CampusSign: campus approvals, locked on a blockchain, and anyone can check them."
 
-## Trust cues and visual assets
+## Proof points to keep handy
 
-Judges trust what looks real, sourced and consistent, so authentic photos and a live QR outweigh any stock image.
+- **The live verify page:** each signer with a short wallet address and "checked on chain", plus the block number.
+- **The tamper demo:** upload a PDF with one byte changed and it reads Tampered.
+- **The audit alarm:** the admin audit tab says "Audit trail intact"; edit one record in the database and it names the broken entry.
+- **Privacy line wherever the blockchain appears:** "fingerprints only, no personal data on chain".
+- **Honesty line on estimates:** every number with "est." is our assumption, to be measured in the pilot.
 
-**Trust cues to place across the deck**
+## Rebuild the deck
 
-- A source footer on every number, with "est." on every estimate.
-- Legal anchors named precisely: IT Act 2000 s.5 and s.3A, Aadhaar eSign, Bharatiya Sakshya Adhiniyam 2023 s.61, DPDP Rules 2025.
-- Government precedent: the National Blockchain Framework and its certificate chain.
-- A privacy line wherever blockchain appears: "hash only, no personal data on chain".
-- On the verify screen shown in the deck: each signer with a short wallet address and "checked on chain", plus the block number.
-- One line on the network: "Each college writes only its own records; a governance account admits new colleges" (a permissioned, Proof of Authority consortium).
-- A real, scannable QR on slides 7 and 10 that opens a sealed sample document on the verify page.
-- "AI assists, humans decide" wherever AI appears.
+```
+cd out
+python source/deck.py <full path>\deck.pptx
+powershell -File source/render.ps1 -Pptx <full path>\deck.pptx -OutDir <full path>\previews -Pdf <full path>\budYweisers_Paperless_Campus.pdf
+```
 
-**Asset checklist**
-
-- [ ] Photo: students waiting outside a faculty cabin on your campus (with consent, faces optional).
-- [ ] Photo: a real no-dues or event-permission sheet with signatures, names blurred.
-- [ ] Screenshots: student submit screen, HoD inbox with AI summary, verify page showing Verified and Tampered.
-- [ ] Phone mock-up frame for those screenshots (free mock-up generators work).
-- [ ] One line-icon set for all icons (Lucide or Phosphor).
-- [ ] SDG tiles 4, 9, 12, 13, 15, 16, used per the UN's SDG logo guidelines.
-- [ ] Diagrams: journey path (slide 2), 5-step flow (slide 4), layer stack (slide 5), role chain (slide 6), hash fork (slide 7), comparison matrix (slide 8), roadmap + hub (slide 10). All are drawn in the companion deck preview.
-- [ ] No third-party logos unless brand guidelines allow; tool names in plain text are fine.
-
-**Build and export**
-
-- Rebuild the slides in Google Slides, Canva or PowerPoint at 16:9 using the design system above; the deck preview in chat shows every layout.
-- Export as PDF with fonts embedded and keep the file small enough to upload easily.
-- Check every slide at phone size; judges often open submissions on mobile.
+Needs python-pptx, PowerPoint (for the render) and the Public Sans and IBM Plex fonts (`source/getfonts.py`).

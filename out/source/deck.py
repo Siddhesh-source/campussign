@@ -83,9 +83,11 @@ def slide_problem(d):
         "Day one: she fills and prints the form, then waits outside the faculty coordinator's cabin. He spots a wrong "
         "date, so she reprints and queues again, and misses a lecture. Day two: the HoD is away, come tomorrow. Day three: "
         "another queue at the Dean Student Affairs office, then the Security stamp. Four signatures, three days, two "
-        "lectures missed, and at no point could anyone tell her where the form was. Many students chase around fifteen "
-        "signatures like this every month; the exact count varies from college to college.")
-    header(s, d, "Problem Statement", "One approval, four cabins, three days: Riya's permission letter for her tech fest.")
+        "lectures missed, and at no point could anyone tell her where the form was. And the worst part: at the end she "
+        "holds a piece of paper that anyone with a pen and a photocopier could fake, and nobody outside the college can "
+        "prove it is real. Many students chase around fifteen signatures like this every month; the exact count varies "
+        "from college to college.")
+    header(s, d, "Problem Statement", "Four cabins, three days, and the result is a paper anyone could fake.")
     xs = [1.0, 2.95, 4.9, 6.85, 8.75]
     y = 2.75
     days = [(xs[0] - 0.25, xs[1] + 0.55, "Day 1"), (xs[2] - 0.55, xs[2] + 0.55, "Day 2"), (xs[3] - 0.55, xs[4] + 0.25, "Day 3")]
@@ -110,7 +112,7 @@ def slide_problem(d):
     # Riya's tally
     ty = 4.55
     line(s, ML, ty - 0.15, 9.05, ty - 0.15, t["rule"], 0.75)
-    tally = [("4", "signatures chased"), ("3", "days"), ("2", "lectures missed"), ("0", "status updates")]
+    tally = [("4", "signatures chased"), ("3", "days"), ("2", "lectures missed"), ("0", "ways to prove it")]
     for i, (n, lab) in enumerate(tally):
         x = ML + i * 2.1
         text(s, x, ty, 2.0, 0.35, [[(n, t["head"], 18, t["bad"] if n != "0" else t["ink"]), ("  " + lab, t["body"], 12, t["muted"])]],
@@ -127,15 +129,15 @@ def slide_scale(d):
     t = d.t
     s = d.new_slide(
         "Now multiply Riya by India. AISHE 2023-24 counts 4.5 crore students in higher education; at about fifteen forms "
-        "a year each, that is roughly 67 crore paper approvals, our estimate. The cost lands on everyone: students queue "
-        "in class hours, faculty are interrupted, the admin office keeps physical files with no audit trail, and a remote "
-        "or differently-abled student must still walk to every cabin. Compliance is getting stricter too: the DPDP Rules' "
-        "core duties on consent, retention and breach records apply from May 2027. India already has the digital rails; "
-        "the everyday campus approval is the missing last mile.")
-    header(s, d, "Scale of the Problem", "Manual approvals cost everyone time and leave institutions without an audit trail.")
+        "a year each, that is roughly 67 crore paper approvals, our estimate. That is a mountain of paper, and not one "
+        "sheet of it can prove itself. AuthBridge found that 1 in 20 education checks in 2025 flagged a problem, mostly "
+        "fake certificates. Students queue in class hours, faculty are interrupted, the admin office keeps files that "
+        "anyone with access can change, and a remote or differently-abled student must still walk to every cabin. "
+        "India already has the digital rails; what is missing is proof: a signature that can defend itself.")
+    header(s, d, "Scale of the Problem", "Crores of approvals a year, and not one of them can prove it is genuine.")
     cols = [("4.50", "crore", t["ink"], "students in Indian higher education", "1,289 universities · 48,246 colleges"),
             ("~67", "crore", t["ink"], "paper approvals a year (est.)", "~15 forms per student; ~200 crore sheets"),
-            ("May", "2027", t["accent"], "DPDP Rules' core duties apply", "consent, retention and breach records")]
+            ("1 in 20", "", t["bad"], "education checks flag a problem", "mostly fake certificates (AuthBridge 2025)")]
     cw = CW / 3
     y = 2.2
     for i, (big, unit, col, lab, sub) in enumerate(cols):
@@ -150,7 +152,7 @@ def slide_scale(d):
     label(s, t, ML, py, 8, "Who carries the manual load today")
     parties = [("Students", "Queue in class hours, with no live status"),
                ("Faculty and HoDs", "Interrupted to sign near-identical slips"),
-               ("Admin office", "Physical files; no audit trail for NAAC or DPDP"),
+               ("Admin office", "Files anyone with access can quietly change"),
                ("Accessibility", "Remote and differently-abled students must reach every cabin")]
     pw = CW / 4
     line(s, ML, py + 0.38, W - MR, py + 0.38, t["rule"], 0.75)
@@ -158,25 +160,25 @@ def slide_scale(d):
         x = ML + i * pw
         text(s, x, py + 0.5, pw - 0.3, 0.3, a, t["semi"], 14, t["ink"])
         text(s, x, py + 0.8, pw - 0.3, 0.55, b, t["body"], 12, t["muted"], spacing=1.1)
-    text(s, ML, 5.55, CW, 0.4, [[("India already has the digital rails. ", t["semi"], 17, t["ink"]),
-                                 ("The everyday campus approval is the missing last mile.", t["semi"], 17, t["accent"])]], t["semi"], 17, t["ink"])
-    footer(s, d, 3, TOTAL, "AISHE 2023-24, Ministry of Education (released Jul 2026). DPDP Rules 2025 (MeitY, notified Nov 2025; core duties "
-                           "from May 2027). Est.: 15 forms × 3 sheets per student a year.")
+    text(s, ML, 5.55, CW, 0.4, [[("Slow is bad. ", t["semi"], 17, t["ink"]),
+                                 ("Impossible to verify is worse. A signature should prove itself.", t["semi"], 17, t["accent"])]], t["semi"], 17, t["ink"])
+    footer(s, d, 3, TOTAL, "AISHE 2023-24, Ministry of Education (released Jul 2026). AuthBridge Workforce Fraud Files 2025: 5% of education "
+                           "checks flagged discrepancies. Est.: 15 forms × 3 sheets per student a year.")
 
 
 # ---------------------------------------------------------------- 4. solution
 def slide_solution(d):
     t = d.t
     s = d.new_slide(
-        "Here is the same request on CampusSign. Riya picks Event permission and fills it in herself; if she wants, "
-        "an optional AI helper points out a missing detail. "
-        "The system sends it to the right roles, not names. Each approver signs with one tap on their phone. The final "
-        "PDF is sealed with a fingerprint on a blockchain, and anyone can verify it by scanning the code. Three days "
-        "becomes the same day, and the paper never exists.")
-    header(s, d, "Proposed Solution", "A student submits once; the system routes it by role, collects signatures and seals the result.")
-    steps = [("Request", "You fill the form"), ("Route", "By role, not by name"),
-             ("Sign", "One tap, OTP or eSign"), ("Seal", "Hash on chain"),
-             ("Verify", "Scan code on the PDF")]
+        "Here is the same request on CampusSign. Riya fills the form once. The system sends it to the right roles, "
+        "not names. Each approver taps Approve and types a PIN; that tap signs with their own digital key, like a "
+        "personal seal nobody else can copy. When the last person signs, the PDF's fingerprint is locked on a "
+        "blockchain. From then on, anyone can scan the QR and get the truth in seconds: Verified, Superseded, Revoked "
+        "or Tampered. Three days becomes the same day, and the paper never exists.")
+    header(s, d, "Proposed Solution", "Submit once. The right people sign. The blockchain remembers forever.")
+    steps = [("Request", "Fill the form once"), ("Route", "By role, not by name"),
+             ("Sign", "PIN + your own digital key"), ("Seal", "Locked on blockchain"),
+             ("Verify", "Anyone scans the QR")]
     y = 2.55
     x0, x1 = ML + 0.2, W - MR - 0.2
     step = (x1 - x0) / 4
@@ -195,7 +197,7 @@ def slide_solution(d):
     fy = 4.05
     label(s, t, ML, fy, 3, "Works for")
     text(s, ML, fy + 0.28, CW, 0.35,
-         "Event permission   ·   On-duty   ·   Bonafide   ·   Internship NOC   ·   No-dues   ·   LOR   ·   Scholarship",
+         "Event permission   ·   On-duty   ·   Bonafide   ·   No-dues   ·   Any PDF to sign   ·   Custom request",
          t["body"], 15, t["ink"])
     # time bars
     by = 5.05
@@ -216,14 +218,13 @@ def slide_arch(d):
     t = d.t
     s = d.new_slide(
         "This is the whole system on one page. Students, approvers, the admin office and verifiers all use one web app "
-        "built in Lovable. Behind it, an n8n workflow engine resolves each role to a person, runs the SLA timers, "
-        "escalates and delegates. Supabase holds the data, logins, files and the audit log. When the last approver signs, "
-        "the sign-and-seal step produces the signed PDF and its SHA-256 fingerprint, and only that fingerprint, with roles "
-        "and timestamps, goes to the blockchain. AI is an optional helper on the side: it can suggest missing details or "
-        "summarise a request, but people fill the forms and people decide. Everything is no-code, so a college IT cell can "
-        "add a form or change an approval chain in minutes. It complements DigiLocker and college ERPs such as Samarth; it "
-        "does not replace them.")
-    header(s, d, "System Architecture", "Every request flows through one no-code platform; only its fingerprint goes on chain.")
+        "that installs on a phone like a normal app. Behind it, our server finds the right person for each role, runs "
+        "the deadlines, escalates and hands work to a delegate. The database keeps the forms, the PDFs and an audit log "
+        "where every line is chained to the one before, so a quiet edit is caught. When the last approver signs, we "
+        "build the PDF, take its fingerprint and send only that fingerprint, with a proof of the signers, to our smart "
+        "contract on the blockchain. Think of the contract as a notary that never sleeps, never forgets and cannot be "
+        "bribed. The security guard's phone can even check a pass with no internet at all.")
+    header(s, d, "System Architecture", "One app does the paperwork; the blockchain is the judge nobody can bribe.")
     # people
     people = [("Students", "fill, submit, track"), ("Approvers", "faculty, HoD, Dean"),
               ("Admin office", "forms, roles, reports"), ("Verifiers", "scan the code on a PDF")]
@@ -238,7 +239,7 @@ def slide_arch(d):
     # platform boundary
     bx0, by0, bx1, by1 = 3.15, 2.05, 9.95, 5.95
     rect(s, bx0, by0, bx1 - bx0, by1 - by0, fill=None, line=t["rule"], lw=1.25)
-    text(s, bx0 + 0.2, by0 + 0.08, 6, 0.25, "CampusSign  ·  built with no-code tools", t["semi"], 11, t["muted"])
+    text(s, bx0 + 0.2, by0 + 0.08, 6, 0.25, "CampusSign  ·  one open-source TypeScript app", t["semi"], 11, t["muted"])
 
     def box(x, y, w, h, title, detail, dashed=False, fill=None):
         sh = rect(s, x, y, w, h, fill=fill or t["bg"], line=t["accent"] if not dashed else t["faint"], lw=1.25)
@@ -248,15 +249,15 @@ def slide_arch(d):
         text(s, x + 0.18, y + 0.42, w - 0.3, h - 0.45, detail, t["body"], 10.5, t["muted"], spacing=1.1)
 
     ax = 3.4
-    box(ax, 2.42, 6.3, 0.72, "Web app  ·  Lovable",
-        "Forms  ·  approver inbox  ·  live tracking  ·  no-code form builder  ·  verify page")
+    box(ax, 2.42, 6.3, 0.72, "Web app  ·  React, installs on a phone",
+        "Forms  ·  approver inbox  ·  live tracking  ·  sign in place on any PDF  ·  verify page")
     line(s, 2.85, 2.78, ax, 2.78, t["faint"], 1.0, arrow=True)
-    box(ax, 3.55, 3.05, 1.1, "Workflow engine  ·  n8n",
-        "Role resolver, SLA timers, escalation, delegation, notifications")
+    box(ax, 3.55, 3.05, 1.1, "Workflow  ·  Node.js server",
+        "Finds who signs, deadlines, escalation, delegation, email")
     box(6.65, 3.55, 3.05, 1.1, "Sign and seal",
-        "OTP or Aadhaar eSign, signed PDF, SHA-256 fingerprint")
-    box(ax, 4.95, 2.65, 0.8, "Data  ·  Supabase", "Postgres, Auth, audit log")
-    box(6.65, 4.95, 3.05, 0.8, "AI assist  ·  optional", "Suggestions and summaries", dashed=True)
+        "PIN + approver's own key, PDF with QR, SHA-256 fingerprint")
+    box(ax, 4.95, 2.65, 0.8, "Data  ·  SQLite", "Forms, PDFs, chained audit log")
+    box(6.65, 4.95, 3.05, 0.8, "Gate phone  ·  offline", "Checks the QR with no internet", dashed=True)
     # flows inside the platform
     line(s, 4.6, 3.14, 4.6, 3.55, t["accent"], 1.25, arrow=True)
     text(s, 4.72, 3.22, 1.6, 0.25, "submit, approve", t["body"], 9.5, t["faint"])
@@ -270,15 +271,15 @@ def slide_arch(d):
     text(s, 9.73, 3.82, 0.75, 0.25, "hash", t["mono"], 9.5, t["accent"], align="c")
     rect(s, cx0, 3.55, W - MR - cx0, 1.1, fill=t["accent"])
     text(s, cx0 + 0.18, 3.67, 1.9, 0.28, "Blockchain", t["semi"], 13, "FFFFFF")
-    text(s, cx0 + 0.18, 3.97, 1.9, 0.6, "Polygon Amoy (MVP); consortium chain at scale", t["body"], 10.5, "DCE6F2", spacing=1.1)
-    text(s, cx0, 4.8, W - MR - cx0, 0.8, "Holds hash, roles and timestamps only. No personal data on chain.",
+    text(s, cx0 + 0.18, 3.97, 1.9, 0.6, "Smart contract on Polygon Amoy or a college chain", t["body"], 10.5, "DCE6F2", spacing=1.1)
+    text(s, cx0, 4.8, W - MR - cx0, 0.8, "Holds fingerprints, a proof of signers and status. No personal data.",
          t["semi"], 11, t["accent"], spacing=1.1)
     # external rails
     line(s, 6.55, by1, 6.55, 6.2, t["faint"], 1.0)
     rect(s, bx0, 6.2, W - MR - bx0, 0.42, fill=None, line=t["rule"], lw=1.0)
     text(s, bx0 + 0.2, 6.2, W - MR - bx0 - 0.3, 0.42,
          [[("Connects to     ", t["semi"], 11.5, t["muted"]),
-           ("Aadhaar eSign  ·  DigiLocker  ·  APAAR ID  ·  WhatsApp and email  ·  Samarth / college ERP", t["body"], 12, t["ink"])]],
+           ("Public block explorer  ·  Email (AWS SES)  ·  Next: Aadhaar eSign, DigiLocker, college ERP", t["body"], 12, t["ink"])]],
          t["body"], 12, t["ink"], anchor="m")
     footer(s, d, 5, TOTAL)
 
@@ -287,44 +288,46 @@ def slide_arch(d):
 def slide_tech(d):
     t = d.t
     s = d.new_slide(
-        "These are the tools we will use. Every layer is no-code or AI-prompted, with free tiers that cover a pilot. "
-        "Lovable builds the web app from plain-English prompts; n8n runs routing, SLA timers and escalation; Supabase "
-        "gives us the database, login and file storage. AI is optional help: Gemini or Claude inside n8n for completeness "
-        "checks and summaries, and Sarvam for Hindi and Marathi. Signing starts with OTP and moves to Aadhaar eSign through "
-        "a licensed provider. The blockchain is the Polygon Amoy testnet for the MVP. n8n and Postgres are open source, so "
-        "a college is never locked in.")
-    header(s, d, "Tech Stack", "Every layer is no-code or AI-prompted, so a college IT cell can run it without developers.")
-    rows = [("Web app", "Lovable", "Softr", "Student, approver, admin and verify screens", "NO-CODE"),
-            ("Workflow and routing", "n8n", "Make", "Role routing, SLA timers, escalation, delegation", "NO-CODE"),
-            ("Data, login, files", "Supabase", "Airtable", "Postgres, Auth, Storage; row-level security", "MANAGED"),
-            ("AI assist (optional)", "Gemini or Claude in n8n", "OpenAI API", "Completeness check, summaries, suggestions", "AI"),
-            ("Indian languages", "Sarvam AI", "Gemini", "Status chat in Hindi and Marathi", "AI"),
-            ("E-signature", "OTP sign; Aadhaar eSign", "DSC tokens", "Aadhaar eSign via Leegality or Digio", "LEGAL"),
-            ("Blockchain", "Polygon Amoy testnet", "Hyperledger Besu", "Document hash; consortium chain at scale", "TRUST"),
-            ("PDF and alerts", "Google Docs via n8n", "PDFMonkey", "Signed PDF; email and WhatsApp alerts", "NO-CODE")]
-    cols = [(ML, 2.35, "Layer"), (ML + 2.45, 2.55, "Primary tool"), (ML + 5.1, 1.75, "Backup"), (ML + 6.95, 3.85, "Role in CampusSign")]
+        "This is what CampusSign is actually built with, and every piece is open source. The app is React, so it "
+        "installs on a phone and even works offline at the gate. The server is Node.js, the database is SQLite, which "
+        "can grow into Postgres. The shaded rows are the blockchain layer, the heart of the product: a Solidity smart "
+        "contract we wrote ourselves, ethers.js to talk to it, and a chain to run it on, a private college chain or "
+        "Polygon's public test network. Every approver gets their own digital key, and the college has a key that signs "
+        "the QR so a guard can check it offline. PDFs are built with pdf-lib and emails go out through AWS. Nothing "
+        "here locks a college in.")
+    header(s, d, "Tech Stack", "Open-source from top to bottom; the blockchain layer is the heart of it.")
+    rows = [("Web app", "React + Vite", "Any browser", "Student, approver, admin, verify and gate screens", "APP"),
+            ("Server and workflow", "Node.js + Express", "", "Role routing, deadlines, escalation, delegation", "APP"),
+            ("Data and files", "SQLite", "Postgres", "Forms, PDFs, hash-chained audit log", "DATA"),
+            ("Smart contract", "Solidity", "", "Seals, versions, revocations, signer check", "CHAIN"),
+            ("Chain connection", "ethers.js", "", "Sends seals, reads proofs, waits for blocks", "CHAIN"),
+            ("Blockchain network", "Polygon Amoy", "College chain", "Public test network, or a private one per college", "CHAIN"),
+            ("Digital signatures", "Ed25519 + wallets", "Aadhaar eSign (next)", "College key for the QR; one key per approver", "CRYPTO"),
+            ("PDF and email", "pdf-lib + QR", "AWS SES", "Sealed PDF with QR code; email alerts", "APP")]
+    cols = [(ML, 2.35, "Layer"), (ML + 2.45, 2.55, "Built with"), (ML + 5.1, 1.75, "Also works with"), (ML + 6.95, 3.85, "What it does")]
     y0 = 1.95
     for x, w, h in cols:
         text(s, x, y0, w, 0.28, h, t["semi"], 11.5, t["muted"])
     text(s, W - MR - 0.95, y0, 0.95, 0.28, "Type", t["semi"], 11.5, t["muted"], align="r")
     line(s, ML, y0 + 0.33, W - MR, y0 + 0.33, t["ink"], 1.0)
     rh = 0.48
-    tag_col = {"NO-CODE": t["accent"], "MANAGED": t["accent"], "AI": t["ink"], "LEGAL": t["muted"], "TRUST": t["ok"]}
+    tag_col = {"APP": t["accent"], "DATA": t["accent"], "CHAIN": t["ok"], "CRYPTO": t["ok"]}
+    shaded = ("CHAIN", "CRYPTO")
     for i, (layer, tool, backup, role, tag) in enumerate(rows):
         y = y0 + 0.42 + i * rh
-        if tag == "AI":
-            rect(s, ML, y - 0.04, CW, rh, fill=t["panel"])
+        if tag in shaded:
+            rect(s, ML, y - 0.04, CW, rh, fill=t["ok_bg"])
         text(s, ML + 0.1, y, 2.3, rh - 0.08, layer, t["semi"], 13, t["ink"], anchor="m")
         text(s, cols[1][0], y, cols[1][1], rh - 0.08, tool, t["semi"], 13, t["accent"], anchor="m")
         text(s, cols[2][0], y, cols[2][1], rh - 0.08, backup, t["body"], 12, t["muted"], anchor="m")
         text(s, cols[3][0], y, cols[3][1], rh - 0.08, role, t["body"], 12, t["muted"], anchor="m")
-        text(s, W - MR - 1.0, y, 0.92, rh - 0.08, {"NO-CODE": "No-code", "MANAGED": "Managed", "AI": "AI", "LEGAL": "Legal",
-             "TRUST": "Trust"}[tag], t["semi"], 11, tag_col[tag], align="r", anchor="m")
-        if tag != "AI":
+        text(s, W - MR - 1.0, y, 0.92, rh - 0.08, {"APP": "App", "DATA": "Data", "CHAIN": "Chain", "CRYPTO": "Crypto"}[tag],
+             t["semi"], 11, tag_col[tag], align="r", anchor="m")
+        if tag not in shaded:
             line(s, ML, y + rh - 0.04, W - MR, y + rh - 0.04, t["rule"], 0.75)
     fy = y0 + 0.42 + len(rows) * rh + 0.2
-    text(s, ML, fy, CW, 0.35, [[("Free tiers cover the pilot.  ", t["semi"], 14, t["ink"]),
-                                ("Open-source n8n and Postgres avoid lock-in. Shaded rows are optional AI help.",
+    text(s, ML, fy, CW, 0.35, [[("Shaded rows are the blockchain layer.  ", t["semi"], 14, t["ink"]),
+                                ("Every tool is open source and free, so a college is never locked in.",
                                  t["body"], 13, t["muted"])]], t["body"], 13, t["muted"])
     footer(s, d, 6, TOTAL)
 
@@ -334,16 +337,19 @@ def slide_routing(d):
     t = d.t
     s = d.new_slide(
         "Routing works on roles, not names, so when a HoD changes nothing breaks. An event permission goes faculty "
-        "coordinator, HoD, Dean Student Affairs, with Security in parallel. Every step has a 48-hour SLA: a nudge, then "
-        "escalation, and a delegate when someone is on leave. People fill the forms and people decide. AI is an optional "
-        "helper: it can suggest a missing detail, flag a missing attachment, or give the HoD a two-line summary.")
-    header(s, d, "Workflow and AI Assistance", "The system knows who must sign, in order, and helps them decide in seconds.")
+        "coordinator, HoD, Dean Student Affairs, with Security in parallel. Every step has a 48-hour deadline: a "
+        "reminder, then escalation, and a delegate when someone is on leave. Now the blockchain part, in plain words. "
+        "Every approver has their own digital key, like a personal seal only they can press. All the seals on a "
+        "document are squeezed into one tiny stamp, a Merkle root, and that stamp goes on the chain. The smart contract "
+        "can then check any single signer by itself. And our audit log is chained line to line, with its latest line "
+        "copied to the blockchain, so if anyone edits history, the alarm goes off.")
+    header(s, d, "Workflow and Blockchain Proof", "The system knows who must sign; the blockchain remembers that they did.")
     top = 2.15
     # left: role chain
     label(s, t, ML, top, 5, "Event permission, routed by role")
-    nodes = [("Student submits", "Fills the form, adds files", t["muted"]), ("Faculty coordinator", "SLA 48 h, then a nudge", t["muted"]),
-             ("HoD", "On leave? Goes to the delegate", t["muted"]), ("Dean Student Affairs", "Missed SLA? Auto-escalates", t["muted"]),
-             ("Approved and sealed", None, t["ok"])]
+    nodes = [("Student submits", "Fills the form, adds files", t["muted"]), ("Faculty coordinator", "48 h deadline, then a reminder", t["muted"]),
+             ("HoD", "On leave? Goes to the delegate", t["muted"]), ("Dean Student Affairs", "Too slow? Auto-escalates", t["muted"]),
+             ("Sealed on the blockchain", None, t["ok"])]
     nx = ML + 0.15
     ys = [top + 0.55 + i * 0.82 for i in range(5)]
     line(s, nx, ys[0], nx, ys[-1], t["rule"], 1.5)
@@ -364,16 +370,16 @@ def slide_routing(d):
     # middle: what AI does
     mx = 5.85
     line(s, mx - 0.3, top, mx - 0.3, 6.45, t["rule"], 0.75)
-    label(s, t, mx, top, 3.3, "Optional AI help")
-    ai = [("Field suggestions", "Suggests a missing detail"),
-          ("Completeness check", "Catches a missing attachment early"),
-          ("Two-line summary", "Approver reads two lines, not pages"),
-          ("Status chat", "\"Where is my NOC?\" in English, Hindi, Marathi")]
+    label(s, t, mx, top, 3.3, "Four locks on every approval")
+    ai = [("Your own digital key", "Only you can unlock your key"),
+          ("One stamp for all", "All signatures in one Merkle root"),
+          ("The chain checks it", "The contract confirms each signer"),
+          ("Tamper alarm", "Edit a record, the hash chain breaks")]
     for i, (a, b) in enumerate(ai):
         y = top + 0.45 + i * 0.82
         text(s, mx, y, 3.25, 0.3, a, t["semi"], 14, t["ink"])
         text(s, mx, y + 0.3, 3.25, 0.5, b, t["body"], 11.5, t["muted"], spacing=1.1)
-    text(s, mx, top + 3.8, 3.3, 0.35, "People decide; AI only suggests.", t["semi"], 14, t["accent"])
+    text(s, mx, top + 3.8, 3.6, 0.35, "People sign. The chain remembers.", t["semi"], 14, t["accent"])
     # right: concept phone, HoD inbox
     px, py, pw, ph = 9.75, 2.0, 2.83, 4.35
     rect(s, px, py, pw, ph, fill=t["bg"], line=t["ink"], lw=1.5, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.07)
@@ -385,15 +391,15 @@ def slide_routing(d):
     text(s, ix + 0.15, cyy + 0.15, 2.2, 0.25, "EVENT PERMISSION", t["mono"], 8.5, t["faint"], tracking=0.8)
     text(s, ix + 0.15, cyy + 0.38, 2.2, 0.3, "Robotics fest, 5 Nov", t["semi"], 12, t["ink"])
     text(s, ix + 0.15, cyy + 0.65, 2.2, 0.25, "Riya · CSE, 2nd year", t["body"], 9.5, t["muted"])
-    text(s, ix + 0.15, cyy + 0.98, 2.2, 0.25, "AI SUMMARY", t["mono"], 8.5, t["accent"], tracking=0.8)
-    text(s, ix + 0.15, cyy + 1.2, 2.15, 0.7, "Fest in Hall B, 120 students. Venue booking attached.", t["body"], 10, t["ink"], spacing=1.1)
+    text(s, ix + 0.15, cyy + 0.98, 2.2, 0.25, "YOUR SIGNING KEY", t["mono"], 8.5, t["accent"], tracking=0.8)
+    text(s, ix + 0.15, cyy + 1.2, 2.15, 0.7, "0x7a3f…c91e. Approve with your PIN; sealed on chain.", t["body"], 10, t["ink"], spacing=1.1)
     tick(s, ix + 0.23, cyy + 1.85, 0.16, t["ok"], 1.5)
-    text(s, ix + 0.38, cyy + 1.74, 2.0, 0.25, "No risk flags", t["body"], 10, t["ok"])
+    text(s, ix + 0.38, cyy + 1.74, 2.0, 0.25, "Hall B · 120 students", t["body"], 10, t["ok"])
     rect(s, ix, py + 3.5, (pw - 0.5) / 2, 0.42, fill=t["ok"])
     text(s, ix, py + 3.5, (pw - 0.5) / 2, 0.42, "Approve", t["semi"], 11, "FFFFFF", align="c", anchor="m")
     rect(s, ix + (pw - 0.5) / 2 + 0.1, py + 3.5, (pw - 0.5) / 2, 0.42, fill=t["bg"], line=t["faint"], lw=1.0)
     text(s, ix + (pw - 0.5) / 2 + 0.1, py + 3.5, (pw - 0.5) / 2, 0.42, "Return", t["semi"], 11, t["ink"], align="c", anchor="m")
-    text(s, px, py + ph + 0.08, pw, 0.25, "Concept screen: HoD inbox", t["body"], 10, t["faint"], align="c")
+    text(s, px, py + ph + 0.08, pw, 0.25, "HoD inbox", t["body"], 10, t["faint"], align="c")
     footer(s, d, 7, TOTAL)
 
 
@@ -450,6 +456,7 @@ def slide_compare(d):
 def slide_impact(d):
     t = d.t
     s = d.new_slide(
+        "Every tap is a sheet not printed, and every approval is a record that can never be quietly changed. "
         "For one university of ten thousand students we estimate one and a half lakh approvals a year moved off paper, "
         "about four and a half lakh sheets, over a lakh student-hours and eight thousand faculty-hours returned. That is "
         "at least 5.7 tonnes of CO2e and about 54 trees. Across Indian higher education: at least 25,400 tonnes and "
@@ -484,7 +491,7 @@ def slide_impact(d):
     label(s, t, sx, top + 0.27, W - MR - sx, "UN Sustainable Development Goals")
     sdgs = [("4", "Quality Education", "class time, not queue time"), ("9", "Industry and Infrastructure", "shared digital rails"),
             ("12", "Responsible Consumption", "single-use paper removed"), ("13", "Climate Action", "live CO2-saved counter"),
-            ("15", "Life on Land", "trees not cut"), ("16", "Strong Institutions", "every decision traceable")]
+            ("15", "Life on Land", "trees not cut"), ("16", "Strong Institutions", "every decision locked on chain")]
     for i, (n, nm, why) in enumerate(sdgs):
         y = top + 0.72 + i * rh
         text(s, sx, y, W - MR - sx, 0.28, [[("SDG " + n + "  ", t["semi"], 14, t["accent"]), (nm, t["semi"], 14, t["ink"])]],
@@ -498,16 +505,18 @@ def slide_impact(d):
 def slide_roadmap(d):
     t = d.t
     s = d.new_slide(
-        "We earn each step with a measured result: an MVP, then one department for a semester with a paper fallback, "
-        "then university-wide once turnaround is halved, then a network of colleges verifying each other's documents. "
-        "The same engine works anywhere a request climbs a ladder of signatures, from government offices to hospitals. "
-        "At fifty rupees per student a year, it costs about what a campus already spends printing these forms, and NAAC "
-        "already counts e-governance. CampusSign: campus approvals, signed in one tap and verifiable by anyone.")
-    header(s, d, "Roadmap and Future Scope", "From one department to every institution that runs on signatures.")
+        "The MVP is built: submit, route, sign, seal on chain, amend, revoke and verify all work today. Next, one "
+        "department for a semester with a paper fallback, then university-wide once turnaround is halved, then a "
+        "network of colleges on one shared chain, each writing its own records and checking everyone else's. Picture "
+        "a single trust network where a degree, a NOC or an internship letter from any college can be checked in two "
+        "seconds. The same engine works anywhere a request climbs a ladder of signatures, from government offices to "
+        "hospitals. At fifty rupees per student a year, it costs about what a campus already spends printing these "
+        "forms. CampusSign: campus approvals, locked on a blockchain, and anyone can check them.")
+    header(s, d, "Roadmap and Future Scope", "From one campus chain to a nationwide network of trust.")
     # roadmap band
     y = 2.7
-    phases = [("MVP prototype", "Submit, route, sign, seal, verify"), ("Department pilot", "One department, one semester"),
-              ("University rollout", "Aadhaar eSign and DigiLocker"), ("College network", "Partner colleges as chain nodes")]
+    phases = [("MVP built", "Sign, seal, amend, revoke, verify"), ("Department pilot", "One department, one semester"),
+              ("University rollout", "Aadhaar eSign and DigiLocker"), ("College network", "Each college a chain node")]
     gates = ["Admin approves", "Turnaround halved", "3 partner colleges"]
     x0, x1 = ML + 0.15, W - MR - 2.6
     st = (x1 - x0) / 3

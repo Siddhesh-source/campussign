@@ -101,3 +101,5 @@
 99. **Contract version check on connect** (`REGISTRY_VERSION`): an older registry is replaced and everything re-anchored through the existing replay path. Approvals from before wallets give an empty root and verify as before, without the per-signer check.
 100. **Test dates are a year ahead (2027-11-…)** so validity-window tests do not expire with the calendar.
 101. **The local `.env` pins the issuer key, wallet seed and JWT secret** (generated, git-ignored), so a database reset keeps the same signing keys. The live server keeps its own `.env`.
+102. **The pitch leads with the blockchain** and explains it with plain analogies (fingerprint, public notebook, notary, personal seal, one stamp for all, tamper alarm). Bold framing is allowed; every number and claim stays true, and estimates keep "est.".
+103. **Pitch docs follow the built deck** (10 slides, `out/source/deck.py`), not the earlier draft outline; the tech stack names only what the product actually uses, with Aadhaar eSign, DigiLocker and ERP marked as next.
