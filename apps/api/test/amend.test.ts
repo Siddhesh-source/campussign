@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { setup, RIYA_EVENT } from './helpers.js';
 
-const NEW_PLAN = { date: '2026-11-12', venue: 'Main Auditorium' };
+const NEW_PLAN = { date: '2027-11-12', venue: 'Main Auditorium' };
 const by = (d: any, decision: string) => d.timeline.filter((s: any) => s.decision === decision).map((s: any) => s.role).sort();
 
 describe('amendment flow: the plan changed', () => {
@@ -52,7 +52,7 @@ describe('amendment flow: the plan changed', () => {
     d = (await as('u_riya').get(`/api/requests/${id}`)).body;
     expect(d.status).toBe('sealed');
     expect(d.seal).toMatchObject({ version: 2, anchor: 'anchored', chainStatus: 'active' });
-    expect(d.seal.validFrom).toBe(Date.parse('2026-11-12T00:00:00+05:30') / 1000);
+    expect(d.seal.validFrom).toBe(Date.parse('2027-11-12T00:00:00+05:30') / 1000);
 
     expect((await chain.get(v1Hash)).status).toBe('superseded');
     expect((await chain.get(v1Hash)).supersededBy).toBe(d.seal.docHash);
@@ -162,7 +162,7 @@ describe('amendment flow: the plan changed', () => {
 
   it('the original submit → approve → seal → verify flow is unchanged for other types', async () => {
     const { as, act, pub } = await setup();
-    const id = (await as('u_riya').post('/api/requests', { type: 'on_duty', form: { title: 'Seminar', date: '2026-11-10' } })).body.id;
+    const id = (await as('u_riya').post('/api/requests', { type: 'on_duty', form: { title: 'Seminar', date: '2027-11-10' } })).body.id;
     await act('u_mehta', id, 'approved');
     await act('u_kulkarni', id, 'approved');
     const d = (await as('u_riya').get(`/api/requests/${id}`)).body;

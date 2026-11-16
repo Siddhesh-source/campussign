@@ -35,7 +35,7 @@ describe('live demo script', () => {
     expect((await pub(`/api/verify/ref/${id}/1`)).body.status).toBe('verified');
 
     // c. date + venue change: only coordinator and HoD
-    const amended = (await as('u_riya').post(`/api/requests/${id}/amend`, { changes: { date: '2026-11-12', venue: 'Main Auditorium' }, reason: 'Hall B under repair' })).body;
+    const amended = (await as('u_riya').post(`/api/requests/${id}/amend`, { changes: { date: '2027-11-12', venue: 'Main Auditorium' }, reason: 'Hall B under repair' })).body;
     expect(amended.timeline.filter((s: any) => s.decision === 'carried').map((s: any) => s.role).sort()).toEqual(['dean_sa', 'security']);
     expect((await as('u_pawar').get('/api/inbox')).body).toHaveLength(0);
     expect((await as('u_rao').get('/api/inbox')).body).toHaveLength(0);
@@ -55,7 +55,7 @@ describe('live demo script', () => {
 
     // e. gate on the new date, offline with a synced list
     const passOf = (v: number) => db.prepare('SELECT pass FROM seals WHERE request_id = ? AND version = ?').pluck().get(id, v) as string;
-    const newDay = at('2026-11-12T10:00:00+05:30');
+    const newDay = at('2027-11-12T10:00:00+05:30');
     const synced = await list();
     expect((await gateCheck(passOf(2), { publicKey, list: synced, now: newDay })).result).toBe('valid');
     expect((await gateCheck(passOf(1), { publicKey, list: synced, now: newDay })).result).toBe('superseded');
@@ -77,7 +77,7 @@ describe('live demo script', () => {
     expect((await pub(`/api/verify/hash/${sha256Hex(edited)}`)).body.status).toBe('not_found');
 
     // h. on-duty and bonafide still flow submit → approve → seal → verify
-    const od = (await as('u_riya').post('/api/requests', { type: 'on_duty', form: { title: 'Seminar', date: '2026-11-10' } })).body.id;
+    const od = (await as('u_riya').post('/api/requests', { type: 'on_duty', form: { title: 'Seminar', date: '2027-11-10' } })).body.id;
     await act('u_mehta', od, 'approved');
     await act('u_kulkarni', od, 'approved');
     const bf = (await as('u_riya').post('/api/requests', { type: 'bonafide', form: { title: 'Scholarship' } })).body.id;

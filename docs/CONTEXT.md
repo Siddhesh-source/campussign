@@ -73,8 +73,10 @@ Amendment rules: student owner only; request must be `sealed`; reason required; 
 
 ## On chain vs off chain
 
-- **On chain:** document hash, issuing college ID, request ID, type, version, previous-version hash, signer-roles hash, timestamps, validity window, status (Active / Superseded / Revoked). Never personal data.
+- **On chain:** document hash, Merkle root of the approvals (each signed by the approver's own wallet), audit-log checkpoints, issuing college ID, request ID, type, version, previous-version hash, signer-roles hash, timestamps, validity window, status (Active / Superseded / Revoked). Never personal data.
 - **Off chain (SQLite + storage):** PDF, form data, comments, audit log.
+
+Blockchain layer details: `docs/BLOCKCHAIN.md`. Concepts overview: `docs/CONCEPTS.md`.
 
 ## Twist: "The Plan Changed"
 

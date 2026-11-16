@@ -1,3 +1,4 @@
+import { ledgerStatus } from './ledger.js';
 import express, { Router, type NextFunction, type Request, type Response } from 'express';
 import { APPROVER_ROLES } from '@plc/shared';
 import { ALLOWED, attachmentFor, saveUpload } from './attachments.js';
@@ -10,7 +11,7 @@ import { addComment, amendRequest, canView, decide, getDetail, inbox, listAll, l
 import { resetDemo } from './demo.js';
 import { issuerKey } from './keys.js';
 import { rateLimit } from './ratelimit.js';
-import { history, pdfPath, revocationInfo, revocationList, revokeRequest, sealInfo, sealRequest, verifyHash, verifyRef, type Services } from './seal.js';
+import { chainInfo, history, pdfPath, revocationInfo, revocationList, revokeRequest, sealInfo, sealRequest, verifyHash, verifyRef, type Services } from './seal.js';
 
 type Handler = (req: Request, res: Response) => unknown;
 const wrap = (fn: Handler) => async (req: Request, res: Response, next: NextFunction) => {
@@ -69,6 +70,8 @@ export function workflowRoutes(db: DB, svc: Services) {
     res.json(detail(req.params.id));
   }));
 
+  // Public facts about the chain (network, block height, contract, issuer, gas, audit checkpoint).
+  r.get('/chain', verifyLimit, wrap(async (_req, res) => res.json(await chainInfo(db, svc))));
   r.get('/revocations', verifyLimit, wrap(async (_req, res) => res.json(await revocationList(db))));
 
   r.post('/requests/:id/reopen', requireAuth, requireRole(...APPROVER_ROLES), wrap((req, res) => {
@@ -120,6 +123,7 @@ export function workflowRoutes(db: DB, svc: Services) {
 
   // Admin: overview, impact, audit, emails, deadline check
   r.get('/admin/stats', requireAuth, requireRole('admin'), (_req, res) => res.json(stats(db)));
+  r.get('/admin/ledger', requireAuth, requireRole('admin'), wrap(async (_req, res) => res.json(await ledgerStatus(db, svc.chain))));
   r.get('/admin/audit', requireAuth, requireRole('admin'), (req, res) => res.json(auditLog(db, Math.min(Number(req.query.limit) || 200, 1000), req.query.request ? String(req.query.request) : undefined)));
   r.get('/admin/emails', requireAuth, requireRole('admin'), (_req, res) => res.json(outbox(db)));
   r.post('/admin/run-sla', requireAuth, requireRole('admin'), (_req, res) => res.json(runSla(db, Date.now(), svc.slaMinutes ?? null)));

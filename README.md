@@ -102,6 +102,8 @@ deploy            Server setup scripts, systemd units, Caddy config
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md): services, database and API
+- [Concepts](docs/CONCEPTS.md): project overview and the ideas it is built on
+- [Blockchain layer](docs/BLOCKCHAIN.md): approver wallets, Merkle root of approvals, issuer network, audit checkpoints
 - [Trust layer](docs/TRUST.md): what is signed, hashed and anchored
 - [Offline gate check](docs/OFFLINE_GATE.md): how passes verify without internet
 - [Sign in place](docs/SIGN_IN_PLACE.md): signature boxes on any PDF

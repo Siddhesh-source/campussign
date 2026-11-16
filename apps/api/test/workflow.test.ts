@@ -114,7 +114,7 @@ describe("Riya's event permission", () => {
 describe('other chains', () => {
   it('on-duty: coordinator → HoD → approved', async () => {
     const { as, act } = await setup();
-    const id = (await as('u_riya').post('/api/requests', { type: 'on_duty', form: { title: 'Robotics workshop at COEP', date: '2026-11-10' } })).body.id;
+    const id = (await as('u_riya').post('/api/requests', { type: 'on_duty', form: { title: 'Robotics workshop at COEP', date: '2027-11-10' } })).body.id;
     await act('u_mehta', id, 'approved');
     await act('u_kulkarni', id, 'approved');
     expect((await as('u_riya').get(`/api/requests/${id}`)).body.status).toBe('sealed');
@@ -177,9 +177,9 @@ describe('guards and validation', () => {
 describe('audit log', () => {
   it('records every action with actor and version', async () => {
     const { as, act, db } = await setup();
-    const id = (await as('u_riya').post('/api/requests', { type: 'on_duty', form: { title: 'Seminar', date: '2026-11-10' } })).body.id;
+    const id = (await as('u_riya').post('/api/requests', { type: 'on_duty', form: { title: 'Seminar', date: '2027-11-10' } })).body.id;
     await act('u_mehta', id, 'returned', { comment: 'Wrong date' });
-    await as('u_riya').post(`/api/requests/${id}/resubmit`, { form: { title: 'Seminar', date: '2026-11-11' } });
+    await as('u_riya').post(`/api/requests/${id}/resubmit`, { form: { title: 'Seminar', date: '2027-11-11' } });
     await act('u_mehta', id, 'approved');
     await act('u_kulkarni', id, 'approved');
     const log = db.prepare('SELECT action, actor_id, version FROM audit_log WHERE request_id = ? ORDER BY id').all(id);

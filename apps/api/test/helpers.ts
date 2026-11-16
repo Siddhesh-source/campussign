@@ -10,7 +10,7 @@ import { openDb } from '../src/db.js';
 import { seed, DEMO_PIN } from '../src/seed.js';
 import { createApp } from '../src/app.js';
 
-export const RIYA_EVENT = { title: 'Robotics fest', date: '2026-11-05', venue: 'Hall B', headcount: 120, purpose: 'Inter-college robotics fest' };
+export const RIYA_EVENT = { title: 'Robotics fest', date: '2027-11-05', venue: 'Hall B', headcount: 120, purpose: 'Inter-college robotics fest' };
 
 export const rpcUrl = () => inject('rpcUrl');
 

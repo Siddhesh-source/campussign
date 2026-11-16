@@ -12,6 +12,9 @@ export const LOCAL_DEV_KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efc
 
 export const STATUS = ['None', 'Active', 'Superseded', 'Revoked'] as const;
 
+/** Must match `REGISTRY_VERSION` in DocumentRegistry.sol; a client replaces a contract with a different version. */
+export const REGISTRY_VERSION = 2;
+
 export async function deployRegistry(signer: Signer): Promise<string> {
   const factory = new ContractFactory(DocumentRegistryArtifact.abi as never, DocumentRegistryArtifact.bytecode, signer);
   const c = await factory.deploy();

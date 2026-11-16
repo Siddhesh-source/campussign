@@ -3,7 +3,7 @@ import path from 'node:path';
 import bcrypt from 'bcryptjs';
 import {
   ROLE_LABEL, canonicalJson, encodePass, passUrl, sha256Hex, signJson, validityFor, verdictFor,
-  type Decision, type PassPayload, type RequestDetail, type RevocationEntry, type RevocationList, type Role, type SealInfo, type VerifyResult, type VersionHistory,
+  type Decision, type PassPayload, type RequestDetail, type RevocationEntry, type RevocationList, type Role, type SealInfo, type VerifyResult, type VersionHistory, type ChainInfo,
 } from '@plc/shared';
 import { HttpError } from './errors.js';
 import { link, notify } from './notify.js';
@@ -14,6 +14,10 @@ import { buildApprovalPdf, istDay } from './pdf.js';
 import { audit, getType, labelsOf } from './workflow.js';
 import { stampDocument } from './stamp.js';
 import { PDFDocument } from 'pdf-lib';
+import { REGISTRY_VERSION } from '@plc/contracts';
+import { checkpointLedger } from './ledger.js';
+import { merkleProof, merkleRoot } from './merkle.js';
+import { approvalStruct } from './wallets.js';
 
 const istStamp = (iso: string) =>
   `${new Date(iso).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' })} IST`;
@@ -50,6 +54,9 @@ interface SealRow {
   chain_status: 'active' | 'superseded' | 'revoked';
   tx_hash: string | null;
   attempts: number;
+  approvals_root: string | null;
+  block_number: number | null;
+  gas_used: number | null;
   created_at: string;
   anchored_at: string | null;
 }
@@ -63,7 +70,9 @@ function signersFor(db: DB, requestId: string, version: number) {
       `SELECT a.id, a.step_no, a.carried_from, a.role, a.decision, a.signed_at, a.signature, a.version, u.name,
               src.version AS src_version, src.signed_at AS src_signed_at, src.signature AS src_signature,
               COALESCE(ob.name, sob.name) AS on_behalf_name,
-              su.name AS src_name
+              su.name AS src_name,
+              COALESCE(src.leaf, a.leaf) AS leaf, COALESCE(src.wallet_address, a.wallet_address) AS wallet_address,
+              COALESCE(src.wallet_sig, a.wallet_sig) AS wallet_sig, COALESCE(src.signed_form_hash, a.signed_form_hash) AS signed_form_hash
          FROM approvals a
          JOIN users u ON u.id = a.assignee_id
          LEFT JOIN approvals src ON src.id = a.carried_from
@@ -89,6 +98,10 @@ function signersFor(db: DB, requestId: string, version: number) {
     src_signature: string | null;
     on_behalf_name: string | null;
     src_name: string | null;
+    leaf: string | null;
+    wallet_address: string | null;
+    wallet_sig: string | null;
+    signed_form_hash: string | null;
   }[];
 }
 
@@ -130,6 +143,8 @@ export async function sealRequest(db: DB, svc: Services, requestId: string) {
       fingerprint: ((carried ? s.src_signature : s.signature) ?? '').slice(0, 16),
     };
   });
+  // Merkle root of the approvals (each signed by the approver's own wallet); only when every approval has a leaf.
+  const approvalsRoot = rows.length && rows.every((r) => r.leaf) ? merkleRoot(rows.map((r) => r.leaf!)) : null;
   const rolesHash = sha256Hex(canonicalJson(signers.map((s) => ({ role: s.role, version: s.version, signedAt: s.signedAt }))));
 
   const issued = new Date();
@@ -208,11 +223,11 @@ export async function sealRequest(db: DB, svc: Services, requestId: string) {
 
   db.transaction(() => {
     db.prepare(
-      `INSERT INTO seals (request_id, version, doc_hash, prev_hash, roles_hash, pass, pdf_path, valid_from, valid_until, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    ).run(req.id, req.current_version, docHash, prev, rolesHash, pass, file, vf, vu, issued.toISOString());
+      `INSERT INTO seals (request_id, version, doc_hash, prev_hash, roles_hash, approvals_root, pass, pdf_path, valid_from, valid_until, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ).run(req.id, req.current_version, docHash, prev, rolesHash, approvalsRoot, pass, file, vf, vu, issued.toISOString());
     db.prepare("UPDATE requests SET status = 'sealing', updated_at = ? WHERE id = ?").run(issued.toISOString(), req.id);
-    audit(db, req.id, null, 'sealed', req.current_version, { docHash });
+    audit(db, req.id, null, 'sealed', req.current_version, { docHash, approvalsRoot });
   })();
 
   await anchor(db, svc, req.id, req.current_version);
@@ -224,7 +239,7 @@ export async function anchor(db: DB, svc: Services, requestId: string, version: 
   if (!s || s.anchor_status !== 'pending' || !svc.chain) return;
   const type = db.prepare('SELECT type FROM requests WHERE id = ?').pluck().get(requestId) as string;
   try {
-    const txHash = await svc.chain.seal({
+    const { txHash, blockNumber, gasUsed } = await svc.chain.seal({
       docHash: s.doc_hash,
       issuer: svc.collegeId ?? 'COLLEGE-001',
       requestId,
@@ -232,15 +247,16 @@ export async function anchor(db: DB, svc: Services, requestId: string, version: 
       version,
       prevHash: s.prev_hash,
       rolesHash: s.roles_hash,
+      approvalsRoot: s.approvals_root,
       validFrom: s.valid_from,
       validUntil: s.valid_until,
     });
     const t = now();
     db.transaction(() => {
-      db.prepare("UPDATE seals SET anchor_status = 'anchored', tx_hash = ?, anchored_at = ?, last_error = NULL WHERE request_id = ? AND version = ?").run(txHash, t, requestId, version);
+      db.prepare("UPDATE seals SET anchor_status = 'anchored', tx_hash = ?, block_number = ?, gas_used = ?, anchored_at = ?, last_error = NULL WHERE request_id = ? AND version = ?").run(txHash, blockNumber, gasUsed, t, requestId, version);
       if (s.prev_hash) db.prepare("UPDATE seals SET chain_status = 'superseded' WHERE doc_hash = ?").run(s.prev_hash);
       db.prepare("UPDATE requests SET status = 'sealed', updated_at = ? WHERE id = ? AND status = 'sealing' AND current_version = ?").run(t, requestId, version);
-      audit(db, requestId, null, 'anchored', version, { txHash, network: svc.chain!.network });
+      audit(db, requestId, null, 'anchored', version, { txHash, block: blockNumber, gas: gasUsed, network: svc.chain!.network });
       if (!s.anchored_at) {
         // First time on chain only (a replay after a chain restart does not email again).
         const student = db.prepare('SELECT student_id FROM requests WHERE id = ?').pluck().get(requestId) as string;
@@ -248,6 +264,7 @@ export async function anchor(db: DB, svc: Services, requestId: string, version: 
         notify(db, student, 'sealed', `Approved and signed: ${title}${version > 1 ? ` (v${version})` : ''}`, `Your approval is signed on chain${version > 1 ? ` as v${version}; v${version - 1} is now superseded` : ''}. Download the PDF with its QR:\n${link(`/requests/${requestId}`)}`, requestId);
       }
     })();
+    await checkpointLedger(db, svc.chain);
   } catch (e) {
     const msg = (e as Error).message ?? String(e);
     // Already on chain (e.g. a retry after a lost response): treat as anchored.
@@ -319,6 +336,8 @@ export async function verifyHash(db: DB, svc: Services, rawHash: string): Promis
   let chainStatus: SealRow['chain_status'] | null = s?.anchor_status === 'anchored' ? s.chain_status : null;
   let revokeReason: number | undefined;
   let onChainNext: string | null = null;
+  let onChainRoot: string | null = null;
+  let issuer: string | undefined;
   if (svc.chain) {
     try {
       const rec = await svc.chain.get(docHash);
@@ -326,6 +345,8 @@ export async function verifyHash(db: DB, svc: Services, rawHash: string): Promis
       chainStatus = rec.status === 'none' ? null : rec.status;
       revokeReason = rec.revokeReason || undefined;
       onChainNext = rec.supersededBy;
+      onChainRoot = rec.approvalsRoot;
+      issuer = rec.issuer || undefined;
     } catch {
       /* chain unreachable: fall back to the mirrored status */
     }
@@ -341,13 +362,22 @@ export async function verifyHash(db: DB, svc: Services, rawHash: string): Promis
   const latest = db.prepare("SELECT version, doc_hash FROM seals WHERE request_id = ? AND anchor_status = 'anchored' ORDER BY version DESC LIMIT 1").get(s.request_id) as
     | { version: number; doc_hash: string }
     | undefined;
-  const signers = signersFor(db, s.request_id, s.version).map((x) => ({
-    role: x.role,
-    roleLabel: ROLE_LABEL[x.role],
-    signedAt: x.decision === 'carried' ? x.src_signed_at : x.signed_at,
-    version: x.decision === 'carried' ? x.src_version! : x.version,
-    carried: x.decision === 'carried',
-  }));
+  const rows = signersFor(db, s.request_id, s.version);
+  const leaves = rows.map((x) => x.leaf);
+  const signers = await Promise.all(
+    rows.map(async (x, i) => {
+      const carried = x.decision === 'carried';
+      const signedAt = carried ? x.src_signed_at : x.signed_at;
+      const version = carried ? x.src_version! : x.version;
+      // The contract itself checks the wallet signature and the Merkle proof against the root it stores.
+      let onChain: boolean | null = null;
+      if (svc.chain && onChainRoot && x.leaf && x.wallet_address && x.wallet_sig && x.signed_form_hash && signedAt && leaves.every(Boolean)) {
+        const a = approvalStruct({ requestId: s.request_id, version, role: x.role, signer: x.wallet_address, formHash: x.signed_form_hash, signedAt });
+        onChain = await svc.chain.checkApproval(docHash, a, x.wallet_sig, merkleProof(leaves as string[], i)).catch(() => null);
+      }
+      return { role: x.role, roleLabel: ROLE_LABEL[x.role], signedAt, version, carried, address: x.wallet_address, onChain };
+    }),
+  );
 
   const supersededInDb = !!db.prepare("SELECT 1 FROM seals WHERE request_id = ? AND version > ? AND anchor_status = 'anchored'").get(s.request_id, s.version);
   const verdict = verdictFor({
@@ -357,12 +387,6 @@ export async function verifyHash(db: DB, svc: Services, rawHash: string): Promis
     validUntil: s.valid_until,
     now: Math.floor(Date.now() / 1000),
   });
-  let issuer: string | undefined;
-  try {
-    issuer = svc.chain ? (await svc.chain.get(docHash)).issuer || undefined : undefined;
-  } catch {
-    issuer = undefined;
-  }
   return {
     status: verdict === 'not_yet_valid' ? 'verified' : verdict,
     issuer,
@@ -380,6 +404,9 @@ export async function verifyHash(db: DB, svc: Services, rawHash: string): Promis
     supersededBy: nextRow ? { version: nextRow.version, docHash: nextRow.doc_hash } : null,
     latest: latest ? { version: latest.version, docHash: latest.doc_hash } : null,
     revokeReason,
+    approvalsRoot: onChainRoot ?? s.approvals_root,
+    blockNumber: s.block_number,
+    gasUsed: s.gas_used,
     txHash: s.tx_hash,
     txUrl: svc.chain?.txUrl(s.tx_hash) ?? null,
     network: svc.chain?.network,
@@ -464,6 +491,7 @@ export async function anchorRevocation(db: DB, svc: Services, requestId: string)
     })();
   try {
     done(await svc.chain.revoke(r.doc_hash, r.reason_code));
+    await checkpointLedger(db, svc.chain);
   } catch (e) {
     const already = await svc.chain.get(r.doc_hash).then((x) => x.status === 'revoked').catch(() => false);
     if (already) return done(null);
@@ -544,4 +572,29 @@ export function history(db: DB, svc: Services, requestId: string): VersionHistor
       })),
     };
   });
+}
+
+// ---------- chain facts ----------
+
+/** Public facts about the chain this installation writes to. */
+export async function chainInfo(db: DB, svc: Services): Promise<ChainInfo | null> {
+  if (!svc.chain) return null;
+  const c = svc.chain;
+  const [info, checkpoint] = await Promise.all([c.info(), c.getCheckpoint()]);
+  const totals = db.prepare("SELECT COUNT(*) AS n, COALESCE(SUM(gas_used), 0) AS gas FROM seals WHERE anchor_status = 'anchored'").get() as { n: number; gas: number };
+  return {
+    network: c.network,
+    chainId: info.chainId,
+    consensus: c.network === 'amoy' ? 'Proof of Stake (Polygon validators)' : 'Proof of Authority (one local validator)',
+    blockNumber: info.blockNumber,
+    contract: info.contract,
+    registryVersion: REGISTRY_VERSION,
+    issuer: c.issuerAddress,
+    college: info.college,
+    owner: info.owner,
+    anchored: totals.n,
+    revoked: db.prepare("SELECT COUNT(*) FROM revocations WHERE anchor_status = 'anchored'").pluck().get() as number,
+    gasUsed: totals.gas,
+    checkpoint: checkpoint.seq ? checkpoint : null,
+  };
 }

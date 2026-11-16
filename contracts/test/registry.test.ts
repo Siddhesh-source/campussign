@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { Contract, JsonRpcProvider, Wallet, encodeBytes32String, ZeroHash, id as keccak } from 'ethers';
+import { AbiCoder, Contract, JsonRpcProvider, Signature, Wallet, concat, encodeBytes32String, getBytes, hashMessage, keccak256, ZeroHash, id as keccak } from 'ethers';
 import { DocumentRegistryArtifact, LOCAL_DEV_KEY, deployRegistry, startLocalNode } from '../lib/index.js';
 
 let node: { url: string; stop: () => Promise<void> };
@@ -20,6 +20,7 @@ beforeEach(async () => {
   const address = await deployRegistry(owner);
   reg = new Contract(address, DocumentRegistryArtifact.abi as never, owner);
   stranger = new Contract(address, DocumentRegistryArtifact.abi as never, new Wallet(OTHER_KEY, provider));
+  await send(reg.addIssuer(owner.address, encodeBytes32String('COLLEGE-001')));
 });
 
 const RID = encodeBytes32String('PLC-2026-0001');
@@ -31,6 +32,7 @@ const rec = (over: Partial<Record<string, unknown>> = {}) => ({
   version: 1,
   prevHash: ZeroHash,
   rolesHash: h('roles'),
+  approvalsRoot: ZeroHash,
   sealedAt: 0,
   validFrom: 1793817000,
   validUntil: 1793903399,
@@ -62,7 +64,7 @@ describe('DocumentRegistry', () => {
     expect(r.sealedAt).toBeGreaterThan(0n);
     expect(await reg.latestFor(RID)).toBe(h('v1'));
     expect(r.issuer).toBe(encodeBytes32String('COLLEGE-001'));
-    expect(Object.keys(r.toObject())).toEqual(['issuer', 'requestId', 'docType', 'version', 'prevHash', 'rolesHash', 'sealedAt', 'validFrom', 'validUntil', 'status']);
+    expect(Object.keys(r.toObject())).toEqual(['issuer', 'requestId', 'docType', 'version', 'prevHash', 'rolesHash', 'approvalsRoot', 'sealedAt', 'validFrom', 'validUntil', 'status']);
   });
 
   it('rejects a duplicate hash, a second v1 for the same request, a zero hash and a bad first version', async () => {
@@ -107,10 +109,61 @@ describe('DocumentRegistry', () => {
     await reverts(reg.seal(h('v2'), rec({ version: 2, prevHash: h('v1') })), 'PrevNotActive');
   });
 
-  it('only the owner can write', async () => {
-    await reverts(stranger.seal(h('v1'), rec()), 'NotOwner');
+  it('only an authorised issuer can write, and only governance manages issuers', async () => {
+    await reverts(stranger.seal(h('v1'), rec()), 'NotIssuer');
     await send(reg.seal(h('v1'), rec()));
-    await reverts(stranger.revoke(h('v1'), 1), 'NotOwner');
+    await reverts(stranger.revoke(h('v1'), 1), 'NotIssuer');
+    await reverts(stranger.checkpoint(h('head'), 1), 'NotIssuer');
+    await reverts(stranger.addIssuer((stranger.runner as Wallet).address, encodeBytes32String('COLLEGE-002')), 'NotOwner');
+  });
+
+  it('colleges in one network cannot touch each other records', async () => {
+    const other = await (stranger.runner as Wallet).getAddress();
+    await send(reg.addIssuer(other, encodeBytes32String('COLLEGE-002')));
+    await reverts(stranger.seal(h('v1'), rec()), 'WrongCollege'); // claims COLLEGE-001
+    await send(stranger.seal(h('b1'), rec({ issuer: encodeBytes32String('COLLEGE-002'), requestId: encodeBytes32String('B-1') })));
+    await send(reg.seal(h('a1'), rec()));
+    await reverts(stranger.revoke(h('a1'), 1), 'WrongCollege');
+    await send(reg.removeIssuer(other));
+    await reverts(stranger.revoke(h('b1'), 1), 'NotIssuer');
+    expect((await reg.get(h('b1'))).status).toBe(1n); // past records stay
+  });
+
+  it('audit checkpoints only move forward, per college', async () => {
+    await send(reg.checkpoint(h('head5'), 5));
+    await reverts(reg.checkpoint(h('head4'), 4), 'StaleCheckpoint');
+    await reverts(reg.checkpoint(h('head5b'), 5), 'StaleCheckpoint');
+    await send(reg.checkpoint(h('head9'), 9));
+    const c = await reg.checkpointOf(encodeBytes32String('COLLEGE-001'));
+    expect(c.seq).toBe(9n);
+    expect(c.head).toBe(h('head9'));
+  });
+
+  it('checks one approval: signer wallet (ecrecover) and Merkle proof against the stored root', async () => {
+    const coder = AbiCoder.defaultAbiCoder();
+    const signers = [Wallet.createRandom(), Wallet.createRandom(), Wallet.createRandom()];
+    const approvals = signers.map((w, i) => ({
+      requestId: RID, version: 1, role: encodeBytes32String(['faculty_coordinator', 'hod', 'dean_sa'][i]),
+      signer: w.address, formHash: h('form'), signedAt: 1793817000 + i,
+    }));
+    const leafOf = (a: (typeof approvals)[number]) =>
+      keccak256(coder.encode(['bytes32', 'uint32', 'bytes32', 'address', 'bytes32', 'uint64'], [a.requestId, a.version, a.role, a.signer, a.formHash, a.signedAt]));
+    const pair = (a: string, b: string) => keccak256(concat(a.toLowerCase() < b.toLowerCase() ? [a, b] : [b, a]));
+    const [l0, l1, l2] = approvals.map(leafOf);
+    expect(await reg.leafOf(approvals[0])).toBe(l0);
+    const root = pair(pair(l0, l1), l2); // odd leaf moves up unchanged
+    await send(reg.seal(h('v1'), rec({ approvalsRoot: root })));
+
+    const sig = (i: number, by = signers[i]) => Signature.from(by.signingKey.sign(hashMessage(getBytes([l0, l1, l2][i]))));
+    const check = (i: number, proof: string[], s = sig(i), a = approvals[i]) => reg.checkApproval(h('v1'), a, s.v, s.r, s.s, proof);
+    expect(await check(0, [l1, l2])).toBe(true);
+    expect(await check(1, [l0, l2])).toBe(true);
+    expect(await check(2, [pair(l0, l1)])).toBe(true);
+    expect(await check(0, [l2, l1])).toBe(false); // wrong proof
+    expect(await check(0, [l1, l2], sig(0, signers[1]))).toBe(false); // signed by someone else
+    expect(await check(0, [l1, l2], sig(0), { ...approvals[0], formHash: h('edited') })).toBe(false); // different form
+    expect(await reg.checkApproval(h('nothing'), approvals[0], sig(0).v, sig(0).r, sig(0).s, [l1, l2])).toBe(false);
+    expect(await reg.REGISTRY_VERSION()).toBe(2n);
   });
 
   it('an unknown hash reads as status None', async () => {

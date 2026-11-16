@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { setup } from './helpers.js';
 
-const NEW_PLAN = { date: '2026-11-12', venue: 'Main Auditorium' };
+const NEW_PLAN = { date: '2027-11-12', venue: 'Main Auditorium' };
 
 describe('versioned sealing: v1 → v2', () => {
   it('history shows each version, its chain state and who approved which version', async () => {

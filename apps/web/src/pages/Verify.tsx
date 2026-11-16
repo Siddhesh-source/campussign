@@ -120,8 +120,15 @@ function Result({ check, onAgain, onCheckLatest }: { check: Check; onAgain: () =
                     <span className="grid h-5 w-5 place-items-center rounded-full bg-ok text-white"><Tick className="h-3 w-3" /></span>
                     {s.roleLabel}
                   </span>
-                  <span className="text-xs text-muted">
+                  <span className="text-right text-xs text-muted">
                     {s.carried ? `v${s.version}, carried` : `v${s.version}`} · {fmtDate(s.signedAt)}
+                    {s.address && (
+                      <span className="block font-mono text-[11px] text-faint">
+                        {s.address.slice(0, 8)}…{s.address.slice(-4)}
+                        {s.onChain === true && <span className="text-ok"> · checked on chain</span>}
+                        {s.onChain === false && <span className="text-bad"> · signature does not match</span>}
+                      </span>
+                    )}
                   </span>
                 </li>
               ))}
@@ -137,6 +144,7 @@ function Result({ check, onAgain, onCheckLatest }: { check: Check; onAgain: () =
               ) : (
                 <span className="font-mono">{live.txHash.slice(0, 18)}…</span>
               )}
+              {live.blockNumber ? ` · block ${live.blockNumber}` : ''}
             </p>
           )}
         </section>

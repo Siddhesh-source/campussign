@@ -64,7 +64,7 @@ describe('reopen a rejected request', () => {
     expect(emails(ctx.db, 'reopened').map((e) => e.to_user)).toEqual(['u_riya']);
     expect((await reopen('u_mehta')).status).toBe(409); // not rejected any more
 
-    const d = (await ctx.as('u_riya').post(`/api/requests/${id}/resubmit`, { form: { ...RIYA_EVENT, date: '2026-11-19' } })).body;
+    const d = (await ctx.as('u_riya').post(`/api/requests/${id}/resubmit`, { form: { ...RIYA_EVENT, date: '2027-11-19' } })).body;
     expect(d.status).toBe('in_review');
     expect(roles(d, 'pending')).toEqual(['faculty_coordinator']);
     expect(d.reopened).toBeNull();

@@ -3,7 +3,7 @@ import { verifyJson, verdictFor } from '@plc/shared';
 import { setup } from './helpers.js';
 import { processQueue } from '../src/seal.js';
 
-const NEW_PLAN = { date: '2026-11-12', venue: 'Main Auditorium' };
+const NEW_PLAN = { date: '2027-11-12', venue: 'Main Auditorium' };
 const revoke = (ctx: any, user: string, id: string, extra: object = {}) =>
   ctx.as(user).post(`/api/requests/${id}/revoke`, { reason: 'Event cancelled by the college', pin: '1234', ...extra });
 
@@ -107,9 +107,9 @@ describe('signed revocation list (for offline gates)', () => {
     await ctx.as('u_riya').post(`/api/requests/${a}/amend`, { changes: NEW_PLAN, reason: 'x' });
     await ctx.act('u_mehta', a, 'approved');
     await ctx.act('u_kulkarni', a, 'approved');
-    const b = await ctx.approvedEvent({ title: 'Coding night', date: '2026-11-20', venue: 'Lab 3', headcount: 40 });
+    const b = await ctx.approvedEvent({ title: 'Coding night', date: '2027-11-20', venue: 'Lab 3', headcount: 40 });
     await revoke(ctx, 'u_kulkarni', b);
-    await ctx.approvedEvent({ title: 'Quiz', date: '2026-11-21', venue: 'Room 101', headcount: 30 }); // untouched: not listed
+    await ctx.approvedEvent({ title: 'Quiz', date: '2027-11-21', venue: 'Room 101', headcount: 30 }); // untouched: not listed
 
     const { list, signature } = (await ctx.pub('/api/revocations')).body;
     const { publicKey } = (await ctx.pub('/api/issuer-public-key')).body;
