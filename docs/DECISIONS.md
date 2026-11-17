@@ -105,3 +105,4 @@
 103. **Pitch docs follow the built deck** (10 slides, `out/source/deck.py`), not the earlier draft outline; the tech stack names only what the product actually uses, with Aadhaar eSign, DigiLocker and ERP marked as next.
 104. **Blockchain is shown as one whole system, not a feature list:** a single architecture slide (nodes, contract, transaction, blocks, verifier) carries the five blockchain features as USPs, and a dedicated Security slide answers each attack, since security is what a trust product sells.
 105. **Repository renamed to `campussign`** to match the product; links in README, SECURITY, CONTRIBUTING and issue templates updated (GitHub redirects the old URL).
+106. **Work is split equally in `TEAM.md`:** the five blockchain parts in `docs/BLOCKCHAIN.md` go one to each member, and the rest of the product is cut into five areas of about the same size, each owned end to end (backend, screens, tests, docs).
