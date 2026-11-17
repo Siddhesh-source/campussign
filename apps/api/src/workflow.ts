@@ -1,5 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { randomUUID } from 'node:crypto';
+import { appendLedger } from './ledger.js';
+import { signApproval } from './wallets.js';
 import { APPROVER_ROLES, ROLE_LABEL, sha256Hex, canonicalJson, signJson } from '@plc/shared';
 import type { Decision, FieldDef, RequestComment, RequestDetail, RequestStatus, RequestSummary, Role, TimelineStep } from '@plc/shared';
 import type { DB } from './db.js';
@@ -39,9 +41,7 @@ interface ApprovalRow {
 const now = () => new Date().toISOString();
 
 export function audit(db: DB, requestId: string | null, actorId: string | null, action: string, version: number | null, details: object = {}) {
-  db.prepare('INSERT INTO audit_log (request_id, actor_id, action, version, details_json, at) VALUES (?, ?, ?, ?, ?, ?)').run(
-    requestId, actorId, action, version, JSON.stringify(details), now(),
-  );
+  appendLedger(db, { requestId, actorId, action, version, details, at: now() });
 }
 
 export function getType(db: DB, code: string) {
@@ -431,11 +431,14 @@ export async function decide(db: DB, userId: string, approvalId: number, decisio
     { requestId: a.request_id, version: a.version, role: a.role, approverId: userId, onBehalfOf, decision, formHash: version.form_hash, signedAt },
     privateKey,
   );
+  // An approval is also signed with the approver's own wallet; the signed hash becomes a Merkle leaf at sealing.
+  const chainSig = decision === 'approved' ? signApproval(db, userId, { requestId: a.request_id, version: a.version, role: a.role, formHash: version.form_hash, signedAt }) : null;
   const student = db.prepare('SELECT student_id FROM requests WHERE id = ?').pluck().get(a.request_id) as string;
   const title = titleOf(db, a.request_id, a.version);
 
   return db.transaction(() => {
     db.prepare('UPDATE approvals SET decision = ?, comment = ?, signed_at = ?, signature = ? WHERE id = ?').run(decision, note, signedAt, signature, a.id);
+    if (chainSig) db.prepare('UPDATE approvals SET wallet_address = ?, wallet_sig = ?, leaf = ?, signed_form_hash = ? WHERE id = ?').run(chainSig.address, chainSig.sig, chainSig.leaf, version.form_hash, a.id);
     if (savedSignature) db.prepare('INSERT OR REPLACE INTO approval_signatures (approval_id, png) VALUES (?, ?)').run(a.id, savedSignature);
     const box = db.prepare('INSERT INTO sign_fields (request_id, attachment_id, step_no, role, page, x, y, w, h) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
     for (const f of placed) box.run(a.request_id, doc, a.step_no, a.role, f.page, f.x, f.y, f.w, f.h);

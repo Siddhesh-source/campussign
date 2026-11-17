@@ -11,6 +11,7 @@ What is signed, hashed, anchored and put in the QR. Code: `apps/api/src/seal.ts`
 
 1. **Each approval decision**: canonical JSON `{requestId, version, role, approverId, onBehalfOf?, decision, formHash, signedAt}`; `formHash` = SHA-256 of the canonical form JSON, or of `{form, attachments: [sha256 of each file]}` when files are attached. `onBehalfOf` is set when a delegate signs for someone away.
 2. **The QR pass**: see below.
+3. **Each approval, again, with the approver's own wallet** (ECDSA secp256k1): the Merkle leaf `keccak256(requestId, version, role, signer, formHash, signedAt)`. At sealing the leaves form a Merkle tree whose root is stored on chain; the contract's `checkApproval` verifies one signer with `ecrecover` + a Merkle proof. Details: `docs/BLOCKCHAIN.md`.
 
 ## Sealing pipeline (runs when the last approver approves)
 
@@ -25,9 +26,9 @@ What is signed, hashed, anchored and put in the QR. Code: `apps/api/src/seal.ts`
 
 ## On chain (`DocumentRegistry`)
 
-`Record { issuer (bytes32 college id, e.g. "COLLEGE-001"), requestId (bytes32 "PLC-2026-0001"), docType (bytes32 "event_permission"), version, prevHash, rolesHash, sealedAt (block time), validFrom, validUntil, status }`, keyed by `docHash`. Also `supersededBy[old] = new`, `latestFor[requestId]`, `revokeReason[docHash]`.
+`Record { issuer (bytes32 college id, e.g. "COLLEGE-001"), requestId (bytes32 "PLC-2026-0001"), docType (bytes32 "event_permission"), version, prevHash, rolesHash, approvalsRoot, sealedAt (block time), validFrom, validUntil, status }`, keyed by `docHash`. Also `supersededBy[old] = new`, `latestFor[requestId]`, `revokeReason[docHash]`.
 
-Rules: no duplicate hash; v1 has prevHash 0 and only one v1 per request; v(n+1) needs prevHash Active, same request, version + 1, and marks prev **Superseded**; `revoke` only from Active. Owner-only writes. Custom errors: `NotOwner, EmptyHash, AlreadySealed, RequestAlreadySealed, PrevNotActive, PrevOtherRequest, BadVersion, NotActive`.
+Rules: no duplicate hash; v1 has prevHash 0 and only one v1 per request; v(n+1) needs prevHash Active, same request, version + 1, and marks prev **Superseded**; `revoke` only from Active. Writes only from an authorised issuer address for its own college (`issuerOf`); the owner manages the issuer list. Audit checkpoints per college (`checkpoint`, forward only). Custom errors: `NotOwner, NotIssuer, WrongCollege, StaleCheckpoint, EmptyHash, AlreadySealed, RequestAlreadySealed, PrevNotActive, PrevOtherRequest, BadVersion, NotActive`.
 
 **Never on chain:** names, roll numbers, department, venue, comments, form contents.
 

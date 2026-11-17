@@ -10,7 +10,7 @@ describe('staff dashboard', () => {
     const sealed = await ctx.approvedEvent();
     const returned = (await ctx.as('u_riya').post('/api/requests', { type: 'event_permission', form: { ...RIYA_EVENT, title: 'Hackathon' } })).body.id;
     await ctx.act('u_mehta', returned, 'returned');
-    const waiting = (await ctx.as('u_riya').post('/api/requests', { type: 'on_duty', form: { title: 'Conference', date: '2026-11-20', purpose: 'Paper' } })).body.id;
+    const waiting = (await ctx.as('u_riya').post('/api/requests', { type: 'on_duty', form: { title: 'Conference', date: '2027-11-20', purpose: 'Paper' } })).body.id;
 
     const d = (await ctx.as('u_mehta').get('/api/dashboard')).body;
     expect(waiting).toMatch(/^PLC-/);

@@ -214,6 +214,38 @@ export interface AuditEntry {
   details: Record<string, unknown>;
 }
 
+/** Health of the hash-chained audit ledger, compared with its latest on-chain checkpoint. */
+export interface LedgerStatus {
+  entries: number;
+  /** False when an entry was changed, removed or inserted. */
+  ok: boolean;
+  brokenAt: number | null;
+  /** Number and hash of the latest entry. */
+  seq: number;
+  head: string | null;
+  /** `matches`: the entry at `seq` still has the hash recorded on chain. `behind`: the chain knows of later entries than the database has. */
+  checkpoint: { seq: number; head: string; at: number; matches: boolean; behind: boolean } | null;
+}
+
+/** Public facts about the chain this installation writes to. */
+export interface ChainInfo {
+  network: string;
+  chainId: number;
+  consensus: string;
+  blockNumber: number;
+  contract: string;
+  registryVersion: number;
+  /** The address this server writes from, and the college it is authorised for. */
+  issuer: string;
+  college: string;
+  /** The governance account that manages the issuer list. */
+  owner: string;
+  anchored: number;
+  revoked: number;
+  gasUsed: number;
+  checkpoint: { seq: number; head: string; at: number } | null;
+}
+
 export interface OutboxEntry {
   id: number;
   to: string;
@@ -252,7 +284,15 @@ export interface VerifyResult {
   sealedAt?: number;
   validFrom?: number;
   validUntil?: number;
-  signers?: { role: Role; roleLabel: string; signedAt: string | null; version: number; carried: boolean }[];
+  /**
+   * `address` is the approver's wallet address. `onChain` is the contract's own answer to "did this wallet sign
+   * this approval, and is it part of this document?" (null when it could not be asked or the approval predates wallets).
+   */
+  signers?: { role: Role; roleLabel: string; signedAt: string | null; version: number; carried: boolean; address?: string | null; onChain?: boolean | null }[];
+  /** Merkle root of the approvals, as stored on chain. */
+  approvalsRoot?: string | null;
+  blockNumber?: number | null;
+  gasUsed?: number | null;
   supersededBy?: { version: number; docHash: string } | null;
   latest?: { version: number; docHash: string } | null;
   revokeReason?: number;

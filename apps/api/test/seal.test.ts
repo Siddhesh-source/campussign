@@ -25,7 +25,7 @@ describe('sealing on full approval', () => {
     const rec = await chain.get(d.seal.docHash);
     expect(rec).toMatchObject({ status: 'active', requestId: id, docType: 'event_permission', version: 1, prevHash: null });
     // Valid only on the event date, 00:00 to 23:59:59 IST
-    expect(rec.validFrom).toBe(Date.parse('2026-11-05T00:00:00+05:30') / 1000);
+    expect(rec.validFrom).toBe(Date.parse('2027-11-05T00:00:00+05:30') / 1000);
     expect(rec.validUntil - rec.validFrom).toBe(86399);
   });
 
@@ -73,8 +73,8 @@ describe('sealing on full approval', () => {
     const { ok, payload } = await verifyPass(pass, publicKey);
     expect(ok).toBe(true);
     expect(payload).toMatchObject({
-      rid: id, v: 1, t: 'event_permission', ti: 'Robotics fest', n: 'Riya', d: 'Computer Science and Engineering', dt: '2026-11-05', ve: 'Hall B',
-      vf: Date.parse('2026-11-05T00:00:00+05:30') / 1000,
+      rid: id, v: 1, t: 'event_permission', ti: 'Robotics fest', n: 'Riya', d: 'Computer Science and Engineering', dt: '2027-11-05', ve: 'Hall B',
+      vf: Date.parse('2027-11-05T00:00:00+05:30') / 1000,
     });
     expect(passFromText(`http://verify.test/verify#p=${pass}`)).toBe(pass);
 

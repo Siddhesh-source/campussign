@@ -173,7 +173,7 @@ describe('sign in place on any PDF', () => {
   it('any request with a PDF attached (custom request): the approver places a box; a saved signature is required', async () => {
     const ctx = await ready();
     await ctx.login('u_iyer');
-    const gen = await ctx.as('u_riya').post('/api/templates/leave', { values: { kind: 'Leave', from: '2026-11-02', to: '2026-11-04', reason: 'Family function' } });
+    const gen = await ctx.as('u_riya').post('/api/templates/leave', { values: { kind: 'Leave', from: '2027-11-02', to: '2027-11-04', reason: 'Family function' } });
     const res = await ctx.as('u_riya').post('/api/requests', {
       type: 'custom',
       form: { title: 'Library fine waiver', purpose: 'Attached application' },
@@ -196,11 +196,11 @@ describe('sign in place on any PDF', () => {
   it('parallel signers on the same step each get their own box and their own signature', async () => {
     const ctx = await ready();
     const gen = await ctx.as('u_riya').post('/api/templates/iv', {
-      values: { industry: 'Tata Motors', place: 'Pimpri', date: '2026-11-20', faculty: 'Prof. Mehta', students: '40', purpose: 'Assembly line visit' },
+      values: { industry: 'Tata Motors', place: 'Pimpri', date: '2027-11-20', faculty: 'Prof. Mehta', students: '40', purpose: 'Assembly line visit' },
     });
     const res = await ctx.as('u_riya').post('/api/requests', {
       type: 'event_permission',
-      form: { title: 'Industrial visit', date: '2026-11-20', venue: 'Pimpri', headcount: 40 },
+      form: { title: 'Industrial visit', date: '2027-11-20', venue: 'Pimpri', headcount: 40 },
       attachments: [gen.body.document.id],
     });
     const signers = res.body.signing.signers.map((x: any) => x.userId);

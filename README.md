@@ -10,8 +10,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Siddhesh-source/mit_wpu/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Siddhesh-source/mit_wpu/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="https://github.com/Siddhesh-source/mit_wpu/releases"><img alt="Release" src="https://img.shields.io/github/v/release/Siddhesh-source/mit_wpu"></a>
+  <a href="https://github.com/Siddhesh-source/campussign/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Siddhesh-source/campussign/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/Siddhesh-source/campussign/releases"><img alt="Release" src="https://img.shields.io/github/v/release/Siddhesh-source/campussign"></a>
   <img alt="Node 20+" src="https://img.shields.io/badge/node-20%2B-339933?logo=node.js&logoColor=white">
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white">
   <img alt="Solidity" src="https://img.shields.io/badge/Solidity-363636?logo=solidity&logoColor=white">
@@ -20,7 +20,7 @@
 <p align="center">
   <a href="https://campussign.duckdns.org"><b>Try it live</b></a> ·
   <a href="https://campussign.duckdns.org/verify">Verify a document</a> ·
-  <a href="https://github.com/Siddhesh-source/mit_wpu/issues/new/choose">Report a bug</a>
+  <a href="https://github.com/Siddhesh-source/campussign/issues/new/choose">Report a bug</a>
 </p>
 
 ---
@@ -51,7 +51,7 @@ flowchart LR
 Requires **Node 20+**.
 
 ```bash
-git clone https://github.com/Siddhesh-source/mit_wpu.git campussign
+git clone https://github.com/Siddhesh-source/campussign.git campussign
 cd campussign
 cp .env.example .env
 npm install
@@ -102,6 +102,8 @@ deploy            Server setup scripts, systemd units, Caddy config
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md): services, database and API
+- [Concepts](docs/CONCEPTS.md): project overview and the ideas it is built on
+- [Blockchain layer](docs/BLOCKCHAIN.md): approver wallets, Merkle root of approvals, issuer network, audit checkpoints
 - [Trust layer](docs/TRUST.md): what is signed, hashed and anchored
 - [Offline gate check](docs/OFFLINE_GATE.md): how passes verify without internet
 - [Sign in place](docs/SIGN_IN_PLACE.md): signature boxes on any PDF

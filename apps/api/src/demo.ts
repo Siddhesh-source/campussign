@@ -34,7 +34,7 @@ if (process.argv[1]?.endsWith('demo.ts')) {
   const { openDb } = await import('./db.js');
   const { chainFromConfig, dbAddressStore } = await import('./chain.js');
   const db = openDb(config.dbPath);
-  const chain = chainFromConfig(config, (n) => dbAddressStore(db, n));
+  const chain = chainFromConfig(config, (n) => dbAddressStore(db, n)); // config carries collegeId
   const id = await resetDemo(db, { chain, storageDir: config.storageDir, publicBaseUrl: config.publicBaseUrl });
   const s = db.prepare('SELECT anchor_status FROM seals WHERE request_id = ?').pluck().get(id);
   console.log(`Demo ready: ${id} signed v1 (${s === 'anchored' ? 'on chain' : 'chain not reachable yet; the API will anchor it when it starts'}). PIN ${DEMO_PIN} for everyone.`);

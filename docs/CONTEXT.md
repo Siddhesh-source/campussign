@@ -2,7 +2,7 @@
 
 **CampusSign** turns signature-chasing paper forms in an Indian university into role-routed digital approvals, signed in one tap and verifiable on a blockchain. Tagline: *No queues. No paper. No forged signatures.*
 
-Sources of truth: `CampusSign — Project Overview.md`, `CampusSign — Pitch Deck Content (10 slides).md`, `out/deck.pptx` (previews in `out/previews/`). On visuals, the built deck wins.
+Sources of truth: `CampusSign — Project Overview.md`, `CampusSign — Pitch Deck Content (12 slides).md`, `out/deck.pptx` (previews in `out/previews/`). On visuals, the built deck wins.
 
 ## Core workflow (must always work)
 
@@ -73,8 +73,10 @@ Amendment rules: student owner only; request must be `sealed`; reason required; 
 
 ## On chain vs off chain
 
-- **On chain:** document hash, issuing college ID, request ID, type, version, previous-version hash, signer-roles hash, timestamps, validity window, status (Active / Superseded / Revoked). Never personal data.
+- **On chain:** document hash, Merkle root of the approvals (each signed by the approver's own wallet), audit-log checkpoints, issuing college ID, request ID, type, version, previous-version hash, signer-roles hash, timestamps, validity window, status (Active / Superseded / Revoked). Never personal data.
 - **Off chain (SQLite + storage):** PDF, form data, comments, audit log.
+
+Blockchain layer details: `docs/BLOCKCHAIN.md`. Concepts overview: `docs/CONCEPTS.md`.
 
 ## Twist: "The Plan Changed"
 

@@ -1,10 +1,11 @@
 """Slides shared by every theme. Each function draws one slide with native shapes."""
 from kit import *
 
-TAGLINE = "Campus approvals, signed in one tap and verifiable by anyone."
-TEAM = "Team budYweisers"
-MEMBERS = "Shruti Dwivedi   ·   Siddhesh Chaudhari   ·   Shankar Jadhav"
-EVENT = "Idea submission  ·  No-code and AI Hackathon, MIT-WPU Pune"
+TAGLINE = "Campus approvals, locked on a blockchain. Anyone can check them."
+TEAM = "Group No. 15"
+NAMES = ["Siddhesh Chaudhari", "Devansh Goyanka", "Ayush Jadhav", "Shishir Chandanshiv", "Arya Deshmukh"]
+MEMBERS = "   ·   ".join(NAMES)
+EVENT = "Blockchain Presentation  ·  Group No. 15"
 
 
 def title_A(d, total):
@@ -15,18 +16,21 @@ def title_A(d, total):
     # team, college and members as one ruled table
     ty = 4.5
     line(s, ML, ty, W - MR, ty, t["ink"], 1.0)
-    cols = [(ML, 3.3, "Team"), (ML + 3.6, 2.6, "College"), (ML + 6.5, CW - 6.5, "Members")]
+    cols = [(ML, 3.3, "Group"), (ML + 3.6, 2.6, "College"), (ML + 6.5, CW - 6.5, "Members")]
     for i, (x, w, lab) in enumerate(cols):
         text(s, x, ty + 0.18, w, 0.28, lab, t["semi"], 12, t["muted"])
         if i:
             line(s, x - 0.3, ty + 0.18, x - 0.3, ty + 1.75, t["rule"], 0.75)
-    text(s, cols[0][0], ty + 0.5, cols[0][1], 0.55, "budYweisers", t["head"], 28, t["accent"])
+    text(s, cols[0][0], ty + 0.5, cols[0][1], 0.55, "Group No. 15", t["head"], 28, t["accent"])
     text(s, cols[1][0], ty + 0.5, cols[1][1], 0.55, "VIT Pune", t["head"], 28, t["ink"])
-    for i, name in enumerate(["Shruti Dwivedi", "Siddhesh Chaudhari", "Shankar Jadhav"]):
-        ry = ty + 0.5 + i * 0.42
-        text(s, cols[2][0], ry, cols[2][1], 0.4, name, t["semi"], 14, t["ink"], anchor="m")
-        if i < 2:
-            line(s, cols[2][0], ry + 0.42, W - MR, ry + 0.42, t["rule"], 0.75)
+    # five members in two columns, same ruled look
+    half = (cols[2][1] - 0.3) / 2
+    for i, name in enumerate(NAMES):
+        cx = cols[2][0] + (i // 3) * (half + 0.3)
+        ry = ty + 0.5 + (i % 3) * 0.42
+        text(s, cx, ry, half, 0.4, name, t["semi"], 14, t["ink"], anchor="m")
+        if i % 3 < 2 and not (i // 3 == 1 and i % 3 == 1):
+            line(s, cx, ry + 0.42, cx + half, ry + 0.42, t["rule"], 0.75)
     line(s, ML, ty + 1.9, W - MR, ty + 1.9, t["rule"], 0.75)
     text(s, ML, 7.0, 8, 0.3, EVENT, t["body"], 9, t["faint"])
     return s
@@ -78,10 +82,11 @@ def title_C(d, total):
 
 TITLES = {"A": title_A, "B": title_B, "C": title_C}
 
-NOTES_1 = ("Open: Every one of us has stood outside a cabin waiting for one signature. "
-           "CampusSign replaces that paper chase: a student submits once, the right people sign on their phone, "
-           "and anyone outside the campus can check the result is genuine. We are team budYweisers from VIT Pune: "
-           "Shruti Dwivedi, Siddhesh Chaudhari and Shankar Jadhav.")
+NOTES_1 = ("Open: Every one of us has stood outside a cabin waiting for one signature, and at the end we got a piece "
+           "of paper anyone could fake. CampusSign kills both problems. A student submits once, the right people sign "
+           "on their phone, and every approval is locked on a blockchain: a public record nobody can quietly change, "
+           "not even us. Anyone, anywhere, can check it in seconds. We are Group No. 15 from VIT Pune: "
+           "Siddhesh Chaudhari, Devansh Goyanka, Ayush Jadhav, Shishir Chandanshiv and Arya Deshmukh.")
 
 
 def slide_trust(d, num, total):
@@ -91,8 +96,8 @@ def slide_trust(d, num, total):
     # flow
     steps = [("Signed PDF", "Approved by Guide, T&P officer, HoD", False),
              ("SHA-256 fingerprint", short(H_OK), True),
-             ("Written on chain", "Hash, signer roles, timestamps", False),
-             ("Verify code on the PDF", "Opens the public verify page", False)]
+             ("Locked on the blockchain", "Fingerprint, signers' proof, status", False),
+             ("QR code on the PDF", "Anyone scans it to check", False)]
     y = 2.3
     sw = 2.55
     gap = (CW - 4 * sw) / 3
@@ -119,8 +124,8 @@ def slide_trust(d, num, total):
         seal(s, ML + 10.0, ry + 0.41, 0.36, t, ok=ok)
         text(s, ML + 10.3, ry + 0.27, 1.5, 0.3, verdict, t["semi"], BODY, t["ok"] if ok else t["bad"])
     # legal strip
-    legal = [("IT Act 2000, s.5", "e-sign as valid as wet ink"),
-             ("Aadhaar eSign", "notified in the Second Schedule"),
+    legal = [("Smart contract", "checks every signer itself"),
+             ("IT Act 2000, s.5", "e-sign as valid as wet ink"),
              ("BSA 2023, s.61", "electronic records admissible"),
              ("DPDP Rules 2025", "no personal data on chain"),
              ("Same model as", "India's National Blockchain Framework")]
@@ -136,9 +141,12 @@ def slide_trust(d, num, total):
     return s
 
 
-NOTES_7 = ("This is why a recruiter in Bengaluru can trust a NOC from Pune without a phone call. "
-           "When the last approver signs, we compute a SHA-256 fingerprint of the PDF and write only that fingerprint, "
-           "the signer roles and timestamps to the chain. No names, no roll numbers. To verify, we re-hash the PDF the "
-           "verifier holds. Change one character, here the request number, and the hash no longer matches. "
-           "Legally, the IT Act gives recognised e-signatures the same validity as wet ink, Aadhaar eSign is a notified "
-           "method, and the Bharatiya Sakshya Adhiniyam treats electronic records as admissible documents.")
+NOTES_7 = ("This is the heart of CampusSign. Think of a fingerprint for a file: change even one letter and the "
+           "fingerprint becomes completely different. When the last person signs, we take the PDF's fingerprint and "
+           "lock it on the blockchain, a public notebook that thousands of computers keep copies of and nobody can "
+           "erase. No names, no roll numbers: only the fingerprint and a proof of who signed. To check a document, "
+           "anyone re-takes its fingerprint and compares it with the chain. Here we changed one character, the request "
+           "number, and the proof breaks: Tampered. And the smart contract does not just store the fingerprint: it "
+           "checks each approver's own digital signature itself, so a recruiter in Bengaluru can trust a NOC from Pune "
+           "without a single phone call, and without trusting our server. Legally, the IT Act gives e-signatures the "
+           "same value as wet ink, and the Bharatiya Sakshya Adhiniyam accepts electronic records as evidence.")

@@ -6,7 +6,7 @@ Run them in order, one per session or one per turn. Each prompt is self-containe
 
 ## Ground rules (apply to every prompt)
 
-- **Source of truth for the product:** `CampusSign — Project Overview.md`, `CampusSign — Pitch Deck Content (10 slides).md` and the built deck `out/deck.pptx` (previews in `out/previews/`). Where the two Markdown files and the built deck disagree on visuals, the **built deck wins** (theme "Public Record" in `out/source/kit.py`).
+- **Source of truth for the product:** `CampusSign — Project Overview.md`, `CampusSign — Pitch Deck Content (12 slides).md` and the built deck `out/deck.pptx` (previews in `out/previews/`). Where the two Markdown files and the built deck disagree on visuals, the **built deck wins** (theme "Public Record" in `out/source/kit.py`).
 - **Scope is core v1 only.** No LLM/AI features, no DigiLocker, no Aadhaar eSign, no WhatsApp/email notifications, no SLA escalation, no delegation, no no-code form builder, no analytics dashboard. If something is not needed to demo the core workflow or the twist, do not build it.
 - **UI:** one primary CTA at the centre of every screen; everything else is secondary. Mobile-first, big tap targets, no nested menus, no modals except a confirm sheet. **Do not write UI tests and do not run browser checks; the user tests the UI.**
 - **Backend:** build features in bulk per prompt, then test them in bulk (`npm test`), fix until green, then commit and push. Never push red.

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ROLE_LABEL, type AuditEntry, type OutboxEntry, type RequestSummary, type Role, type Stats } from '@plc/shared';
+import { ROLE_LABEL, type AuditEntry, type LedgerStatus, type OutboxEntry, type RequestSummary, type Role, type Stats } from '@plc/shared';
 import { Empty, Page, PageHeader, StatusPill, toast } from '../components/ui';
 import { ImpactDashboard } from '../components/ImpactDashboard';
 import { api } from '../lib/api';
@@ -40,6 +40,7 @@ export default function Admin() {
   const needle = q.trim().toLowerCase();
   const shown = all?.filter((r) => !needle || [r.id, r.title, r.typeName, r.student.name, r.department].some((v) => v.toLowerCase().includes(needle)));
   const { data: log } = useLive<AuditEntry[]>(tab === 'audit' ? '/api/admin/audit?limit=300' : null, 8000);
+  const { data: ledger } = useLive<LedgerStatus>(tab === 'audit' ? '/api/admin/ledger' : null, 15_000);
   const { data: mails } = useLive<OutboxEntry[]>(tab === 'emails' ? '/api/admin/emails' : null, 5000);
   const [busy, setBusy] = useState(false);
 
@@ -116,6 +117,17 @@ export default function Admin() {
 
       {tab === 'impact' && stats && <ImpactDashboard s={stats} />}
 
+      {tab === 'audit' && ledger && (
+        <p className={`mb-3 text-sm ${ledger.ok && ledger.checkpoint?.matches !== false && !ledger.checkpoint?.behind ? 'text-ok' : 'text-bad'}`}>
+          {!ledger.ok
+            ? `Audit trail altered: entry ${ledger.brokenAt} no longer matches the chain of hashes.`
+            : ledger.checkpoint?.behind
+              ? `Entries are missing: the chain recorded entry ${ledger.checkpoint.seq}, the database ends at ${ledger.seq}.`
+              : ledger.checkpoint && !ledger.checkpoint.matches
+                ? `Audit trail differs from the copy recorded on chain at entry ${ledger.checkpoint.seq}.`
+                : `Audit trail intact: ${ledger.entries} entries hash-linked${ledger.checkpoint ? `, last recorded on chain at entry ${ledger.checkpoint.seq}` : ''}.`}
+        </p>
+      )}
       {tab === 'audit' && (
         <div className="overflow-x-auto rounded-2xl border border-rule">
           <table className="w-full min-w-[640px] text-sm">
